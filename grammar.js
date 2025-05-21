@@ -147,11 +147,12 @@ module.exports = grammar({
     directive_content: $ => repeat1($._node),
 
     // Output expressions
-    output_expression: $ => seq(
-      '{{',
-      optional($.js_expression),
-      '}}'
+    // Output expressions - updated to support both {{ }} and {{{ }}}
+    output_expression: $ => choice(
+      seq('{{', optional($.js_expression), '}}'),  // Regular (escaped) output
+      seq('{{{', optional($.js_expression), '}}}')  // Unescaped output
     ),
+
 
     // JavaScript expressions (fixed to require at least one character)
     js_expression: $ => /[^){}]+/,
