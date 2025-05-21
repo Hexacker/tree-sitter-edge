@@ -297,50 +297,20 @@
       ]
     },
     "raw_directive": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "DIRECTIVE_AT"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "DIRECTIVE_NAME"
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "DIRECTIVE_DOT"
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "DIRECTIVE_METHOD"
-                }
-              ]
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "DIRECTIVE_ARGS"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        }
-      ]
+      "type": "TOKEN",
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "STRING",
+            "value": "@"
+          },
+          {
+            "type": "PATTERN",
+            "value": "[a-zA-Z_$][a-zA-Z0-9_$]*(\\.[a-zA-Z_$][a-zA-Z0-9_$]*)?(\\([^)]*\\))?"
+          }
+        ]
+      }
     },
     "if_directive": {
       "type": "SEQ",
@@ -836,28 +806,7 @@
   ],
   "conflicts": [],
   "precedences": [],
-  "externals": [
-    {
-      "type": "SYMBOL",
-      "name": "DIRECTIVE_AT"
-    },
-    {
-      "type": "SYMBOL",
-      "name": "DIRECTIVE_NAME"
-    },
-    {
-      "type": "SYMBOL",
-      "name": "DIRECTIVE_DOT"
-    },
-    {
-      "type": "SYMBOL",
-      "name": "DIRECTIVE_METHOD"
-    },
-    {
-      "type": "SYMBOL",
-      "name": "DIRECTIVE_ARGS"
-    }
-  ],
+  "externals": [],
   "inline": [],
   "supertypes": [],
   "reserved": {}
