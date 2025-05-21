@@ -87,11 +87,20 @@ module.exports = grammar({
       $.raw_directive
     ),
 
-    raw_directive: $ => seq(
-      '@',
-      $.expression
-    ),
+    raw_directive: $ => choice(
+          // Complex case: @layout.dashboard()
+          seq('@', $.complex_directive),
 
+          // Simple case: @include()
+          seq('@', $.identifier, optional($.directive_params))
+        ),
+    complex_directive: $ => choice(
+          // Property access: layout.dashboard
+          seq($.identifier, '.', $.identifier, optional($.directive_params)),
+
+          // Function call: flashMessage('notification')
+          seq($.identifier, $.directive_params)
+        ),
     if_directive: $ => seq(
       '@if',
       $.directive_params,
