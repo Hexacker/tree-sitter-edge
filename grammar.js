@@ -13,7 +13,8 @@ module.exports = grammar({
       $.doctype,
       $.element,
       $.directive,
-      $.output_expression,
+      $.escaped_output,    // Double curly braces {{ }}
+      $.unescaped_output,  // Triple curly braces {{{ }}}
       $.comment,
       $.raw_text
     ),
@@ -87,6 +88,15 @@ module.exports = grammar({
       $.raw_directive
     ),
 
+    // Edge Helpers
+    edge_helper: $ => choice(
+      'layout',
+      'flashMessage',
+      'include',
+      'component',
+      // Add other built-in EdgeJS helpers
+    ),
+
     if_directive: $ => seq(
       '@if',
       $.directive_params,
@@ -133,8 +143,13 @@ module.exports = grammar({
 
     raw_directive: $ => seq(
       '@',
-      $.identifier,
-      optional($.directive_params)
+      choice(
+        seq($.edge_helper, $.directive_params),
+        seq($.identifier, $.directive_params),
+        $.method_call,
+        $.property_access,
+        $.identifier
+      )
     ),
 
     directive_params: $ => seq(
@@ -143,21 +158,69 @@ module.exports = grammar({
       ')'
     ),
 
-    // Fixed to require at least one node
     directive_content: $ => repeat1($._node),
 
-    // Output expressions
-    // Output expressions - updated to support both {{ }} and {{{ }}}
-    output_expression: $ => choice(
-      seq('{{', optional($.js_expression), '}}'),  // Regular (escaped) output
-      seq('{{{', optional($.js_expression), '}}}')  // Unescaped output
+    // Output expressions - separate rules for escaped and unescaped output
+    escaped_output: $ => seq(
+      '{{',
+      optional($.js_expression),
+      '}}'
     ),
 
+    unescaped_output: $ => seq(
+      '{{{',
+      optional($.js_expression),
+      '}}}'
+    ),
 
-    // JavaScript expressions (fixed to require at least one character)
-    js_expression: $ => /[^){}]+/,
+    // JavaScript expressions
+    js_expression: $ => choice(
+      $.identifier,
+      $.property_access,
+      $.method_call,
+      $.string_literal,
+      $.number
+    ),
 
-    identifier: $ => /[a-zA-Z_][a-zA-Z0-9_]*/,
+    identifier: $ => /[a-zA-Z_$][a-zA-Z0-9_$]*/,
+
+    property_access: $ => seq(
+      choice($.identifier, $.property_access, $.method_call),
+      '.',
+      $.identifier
+    ),
+
+    method_call: $ => seq(
+      choice($.identifier, $.property_access),
+      '(',
+      optional($.method_arguments),
+      ')'
+    ),
+
+    method_arguments: $ => seq(
+      choice(
+        $.identifier,
+        $.property_access,
+        $.string_literal,
+        $.number
+      ),
+      repeat(seq(
+        ',',
+        choice(
+          $.identifier,
+          $.property_access,
+          $.string_literal,
+          $.number
+        )
+      ))
+    ),
+
+    string_literal: $ => choice(
+      seq("'", optional(/[^']*/), "'"),
+      seq('"', optional(/[^"]*/), '"')
+    ),
+
+    number: $ => /\d+(\.\d+)?/,
 
     // Comments
     comment: $ => choice(
