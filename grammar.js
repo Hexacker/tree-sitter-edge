@@ -13,8 +13,8 @@ module.exports = grammar({
       $.doctype,
       $.element,
       $.directive,
-      $.escaped_output,    // Double curly braces {{ }}
-      $.unescaped_output,  // Triple curly braces {{{ }}}
+      $.escaped_output,
+      $.unescaped_output,
       $.comment,
       $.raw_text
     ),
@@ -85,16 +85,13 @@ module.exports = grammar({
       $.slot_directive,
       $.include_directive,
       $.let_directive,
-      $.raw_directive
+      $.complex_directive
     ),
 
-    // Edge Helpers
-    edge_helper: $ => choice(
-      'layout',
-      'flashMessage',
-      'include',
-      'component',
-      // Add other built-in EdgeJS helpers
+    // NEW: Complex directive for @layout.dashboard() style syntax
+    complex_directive: $ => seq(
+      '@',
+      $.complex_expression
     ),
 
     if_directive: $ => seq(
@@ -108,11 +105,6 @@ module.exports = grammar({
     else_directive: $ => choice(
       seq('@else', $.directive_content),
       seq('@elseif', $.directive_params, $.directive_content)
-    ),
-
-    output_expression: $ => choice(
-      seq('{{', optional($.js_expression), '}}'),
-      seq('{{{', optional($.js_expression), '}}}')
     ),
 
     each_directive: $ => seq(
@@ -146,85 +138,82 @@ module.exports = grammar({
       $.directive_params
     ),
 
-    raw_directive: $ => seq(
-      '@',
-      choice(
-        $.full_expression,
-        $.identifier
-      )
-    ),
-
-    // Add this new rule
-    full_expression: $ => choice(
-      seq($.identifier, '.', $.identifier, optional($.directive_params)),
-      seq($.identifier, $.directive_params)
+    directive_params: $ => seq(
+      '(',
+      optional($.js_expression),
+      ')'
     ),
 
     directive_content: $ => repeat1($._node),
 
-    // Output expressions - separate rules for escaped and unescaped output
+    // Output expressions
     escaped_output: $ => seq(
       '{{',
-      optional($.js_expression),
+      optional($.complex_expression),
       '}}'
     ),
 
     unescaped_output: $ => seq(
       '{{{',
-      optional($.js_expression),
+      optional($.complex_expression),
       '}}}'
     ),
 
-    // JavaScript expressions
-    js_expression: $ => choice(
-      $.identifier,
-      $.property_access,
+    // NEW: Enhanced expression handling
+    complex_expression: $ => choice(
+      $.method_chain,
+      $.property_chain,
       $.method_call,
-      $.string_literal,
-      $.number
-    ),
-
-    identifier: $ => /[a-zA-Z_$][a-zA-Z0-9_$]*/,
-
-    property_access: $ => seq(
-      choice($.identifier, $.property_access, $.method_call),
-      '.',
       $.identifier
     ),
 
+    property_chain: $ => seq(
+      choice($.identifier, $.method_call),
+      '.',
+      choice($.identifier, $.property_chain, $.method_call)
+    ),
+
+    method_chain: $ => seq(
+      $.method_call,
+      '.',
+      choice($.identifier, $.method_call, $.property_chain)
+    ),
+
     method_call: $ => seq(
-      choice($.identifier, $.property_access),
+      $.identifier,
       '(',
-      optional($.method_arguments),
+      optional($.call_arguments),
       ')'
     ),
 
-    method_arguments: $ => seq(
-      choice(
-        $.identifier,
-        $.property_access,
-        $.string_literal,
-        $.number
-      ),
-      repeat(seq(
-        ',',
-        choice(
-          $.identifier,
-          $.property_access,
-          $.string_literal,
-          $.number
-        )
-      ))
+    call_arguments: $ => seq(
+      $.argument,
+      repeat(seq(',', $.argument))
     ),
+
+    argument: $ => choice(
+      $.identifier,
+      $.property_chain,
+      $.method_call,
+      $.string_literal,
+      $.number_literal
+    ),
+
+    // Simple expressions for backward compatibility
+    js_expression: $ => choice(
+      $.complex_expression,
+      /[^){}]+/
+    ),
+
+    identifier: $ => /[a-zA-Z_$][a-zA-Z0-9_$]*/,
 
     string_literal: $ => choice(
       seq("'", optional(/[^']*/), "'"),
       seq('"', optional(/[^"]*/), '"')
     ),
 
-    number: $ => /\d+(\.\d+)?/,
+    number_literal: $ => /\d+(\.\d+)?/,
 
-    // Comments
     comment: $ => choice(
       seq('{{--', /[^-]*(-[^-}])*/, '--}}'),
       seq('<!--', /[^-]*(-[^-])*/, '-->')
