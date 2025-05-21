@@ -6,6 +6,8 @@ module.exports = grammar({
     $.comment
   ],
 
+  // Remove unnecessary conflicts section
+
   rules: {
     source_file: $ => repeat($._node),
 
@@ -76,7 +78,7 @@ module.exports = grammar({
     ),
     attribute_content: $ => /[^"']*/,
 
-    // Edge directives
+    // Edge directives - removed else_directive from here
     directive: $ => choice(
       $.if_directive,
       $.each_directive,
@@ -87,11 +89,37 @@ module.exports = grammar({
       $.raw_directive
     ),
 
-    // Token-based raw directive approach
-    raw_directive: $ => token(seq(
-      '@',
-      /[a-zA-Z_$][a-zA-Z0-9_$]*(\.[a-zA-Z_$][a-zA-Z0-9_$]*)?(\([^)]*\))?/
-    )),
+    // Component-based raw directive parsing
+    raw_directive: $ => choice(
+      // Simple directives like @csrf
+      seq(
+        alias('@', $.directive_symbol),
+        alias($.identifier, $.directive_name)
+      ),
+
+      // Complex directives with property access like @layout.dashboard()
+      seq(
+        alias('@', $.directive_symbol),
+        alias($.identifier, $.directive_name),
+        alias('.', $.directive_dot),
+        alias($.identifier, $.property_name),
+        optional($.parameter_list)
+      ),
+
+      // Simple directives with parameters like @flashMessage('notification')
+      seq(
+        alias('@', $.directive_symbol),
+        alias($.identifier, $.directive_name),
+        $.parameter_list
+      )
+    ),
+
+    // Parameters in parentheses
+    parameter_list: $ => seq(
+      alias('(', $.param_open),
+      optional(alias(/[^)]*/, $.parameter_content)),
+      alias(')', $.param_close)
+    ),
 
     if_directive: $ => seq(
       '@if',
@@ -116,9 +144,9 @@ module.exports = grammar({
 
     each_params: $ => seq(
       '(',
-      $.identifier,    // item
-      'in',            // in keyword
-      $.expression,    // items
+      $.identifier,
+      'in',
+      $.expression,
       ')'
     ),
 

@@ -439,6 +439,29 @@
     }
   },
   {
+    "type": "parameter_list",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "param_close",
+          "named": true
+        },
+        {
+          "type": "param_open",
+          "named": true
+        },
+        {
+          "type": "parameter_content",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "quoted_attribute_value",
     "named": true,
     "fields": {},
@@ -448,6 +471,37 @@
       "types": [
         {
           "type": "attribute_content",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "raw_directive",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "directive_dot",
+          "named": true
+        },
+        {
+          "type": "directive_name",
+          "named": true
+        },
+        {
+          "type": "directive_symbol",
+          "named": true
+        },
+        {
+          "type": "parameter_list",
+          "named": true
+        },
+        {
+          "type": "property_name",
           "named": true
         }
       ]
@@ -641,6 +695,18 @@
     "named": true
   },
   {
+    "type": "directive_dot",
+    "named": true
+  },
+  {
+    "type": "directive_name",
+    "named": true
+  },
+  {
+    "type": "directive_symbol",
+    "named": true
+  },
+  {
     "type": "html",
     "named": false
   },
@@ -657,7 +723,19 @@
     "named": true
   },
   {
-    "type": "raw_directive",
+    "type": "param_close",
+    "named": true
+  },
+  {
+    "type": "param_open",
+    "named": true
+  },
+  {
+    "type": "parameter_content",
+    "named": true
+  },
+  {
+    "type": "property_name",
     "named": true
   },
   {
