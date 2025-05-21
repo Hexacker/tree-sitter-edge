@@ -87,33 +87,13 @@ module.exports = grammar({
       $.raw_directive
     ),
 
-    // Raw directive with component-based structure
+    // Raw directive with token-based approach
     raw_directive: $ => seq(
       '@',
-      $.directive_name,
-      optional(choice(
-        $.directive_property_access,
-        $.directive_params
-      ))
+      $.directive_expression
     ),
 
-    directive_name: $ => $.identifier,
-
-    directive_property_access: $ => seq(
-      '.',
-      $.property_name,
-      optional($.directive_params)
-    ),
-
-    property_name: $ => $.identifier,
-
-    directive_params: $ => seq(
-      '(',
-      optional($.string_content),
-      ')'
-    ),
-
-    string_content: $ => /[^)]*/,
+    directive_expression: $ => /[a-zA-Z_$][a-zA-Z0-9_$\.]*(\([^)]*\))?/,
 
     if_directive: $ => seq(
       '@if',
@@ -128,7 +108,6 @@ module.exports = grammar({
       seq('@elseif', $.directive_params, $.directive_content)
     ),
 
-    // Fixed each directive for @each(item in items) syntax
     each_directive: $ => seq(
       '@each',
       $.each_params,
@@ -168,9 +147,15 @@ module.exports = grammar({
       $.directive_params
     ),
 
+    directive_params: $ => seq(
+      '(',
+      optional($.expression),
+      ')'
+    ),
+
     directive_content: $ => repeat1($._node),
 
-    // Output expressions with explicit bracket nodes
+    // Output expressions
     output_expression: $ => choice(
       seq(
         '{{',

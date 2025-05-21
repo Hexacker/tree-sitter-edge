@@ -305,92 +305,13 @@
         },
         {
           "type": "SYMBOL",
-          "name": "directive_name"
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "directive_property_access"
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "directive_params"
-                }
-              ]
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
+          "name": "directive_expression"
         }
       ]
     },
-    "directive_name": {
-      "type": "SYMBOL",
-      "name": "identifier"
-    },
-    "directive_property_access": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "."
-        },
-        {
-          "type": "SYMBOL",
-          "name": "property_name"
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "directive_params"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        }
-      ]
-    },
-    "property_name": {
-      "type": "SYMBOL",
-      "name": "identifier"
-    },
-    "directive_params": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "("
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "string_content"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "STRING",
-          "value": ")"
-        }
-      ]
-    },
-    "string_content": {
+    "directive_expression": {
       "type": "PATTERN",
-      "value": "[^)]*"
+      "value": "[a-zA-Z_$][a-zA-Z0-9_$\\.]*(\\([^)]*\\))?"
     },
     "if_directive": {
       "type": "SEQ",
@@ -571,6 +492,31 @@
         {
           "type": "SYMBOL",
           "name": "directive_params"
+        }
+      ]
+    },
+    "directive_params": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "("
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "expression"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "STRING",
+          "value": ")"
         }
       ]
     },

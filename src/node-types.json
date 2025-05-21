@@ -151,21 +151,6 @@
     }
   },
   {
-    "type": "directive_name",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "directive_params",
     "named": true,
     "fields": {},
@@ -174,26 +159,7 @@
       "required": false,
       "types": [
         {
-          "type": "string_content",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "directive_property_access",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "directive_params",
-          "named": true
-        },
-        {
-          "type": "property_name",
+          "type": "expression",
           "named": true
         }
       ]
@@ -473,21 +439,6 @@
     }
   },
   {
-    "type": "property_name",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "quoted_attribute_value",
     "named": true,
     "fields": {},
@@ -507,19 +458,11 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
-          "type": "directive_name",
-          "named": true
-        },
-        {
-          "type": "directive_params",
-          "named": true
-        },
-        {
-          "type": "directive_property_access",
+          "type": "directive_expression",
           "named": true
         }
       ]
@@ -717,6 +660,10 @@
     "named": true
   },
   {
+    "type": "directive_expression",
+    "named": true
+  },
+  {
     "type": "html",
     "named": false
   },
@@ -734,10 +681,6 @@
   },
   {
     "type": "raw_text",
-    "named": true
-  },
-  {
-    "type": "string_content",
     "named": true
   },
   {
