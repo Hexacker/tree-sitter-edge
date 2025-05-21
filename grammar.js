@@ -18,7 +18,7 @@ module.exports = grammar({
       $.raw_text
     ),
 
-    // HTML elements (keep the same)
+    // HTML elements (keep unchanged)
     element: $ => choice(
       seq(
         $.open_tag,
@@ -27,8 +27,6 @@ module.exports = grammar({
       ),
       $.self_closing_tag
     ),
-
-    // Keep all your HTML tag related rules...
 
     open_tag: $ => seq(
       '<',
@@ -89,16 +87,33 @@ module.exports = grammar({
       $.raw_directive
     ),
 
-    // Simple structure for raw directives - just parse the @ part for now
+    // Raw directive with simpler structure
     raw_directive: $ => seq(
       '@',
-      $.raw_directive_content
+      $.directive_name,
+      optional(choice(
+        $.directive_property_access,
+        $.directive_params
+      ))
     ),
 
-    // Use a regex to match the rest of the directive, to be split later for highlighting
-    raw_directive_content: $ => /[a-zA-Z_$][a-zA-Z0-9_$\.]*(?:\([^)]*\))?/,
+    directive_name: $ => $.identifier,
 
-    // Keep all your other directives unchanged
+    directive_property_access: $ => seq(
+      '.',
+      $.property_name,
+      optional($.directive_params)
+    ),
+
+    property_name: $ => $.identifier,
+
+    directive_params: $ => seq(
+      '(',
+      optional($.params_content),
+      ')'
+    ),
+
+    params_content: $ => /[^)]*/,
 
     if_directive: $ => seq(
       '@if',
@@ -113,6 +128,7 @@ module.exports = grammar({
       seq('@elseif', $.directive_params, $.directive_content)
     ),
 
+    // Fixed each directive for @each(item in items) syntax
     each_directive: $ => seq(
       '@each',
       $.each_params,
@@ -163,18 +179,18 @@ module.exports = grammar({
     // Output expressions with explicit bracket nodes
     output_expression: $ => choice(
       seq(
-        alias('{{', $.output_open),
+        '{{',
         optional($.expression),
-        alias('}}', $.output_close)
+        '}}'
       ),
       seq(
-        alias('{{{', $.output_open_unescaped),
+        '{{{',
         optional($.expression),
-        alias('}}}', $.output_close_unescaped)
+        '}}}'
       )
     ),
 
-    // Expression system (keep the same)
+    // Expression system
     expression: $ => choice(
       $.member_expression,
       $.method_call,

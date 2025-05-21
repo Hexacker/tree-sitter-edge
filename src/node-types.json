@@ -151,6 +151,21 @@
     }
   },
   {
+    "type": "directive_name",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "directive_params",
     "named": true,
     "fields": {},
@@ -160,6 +175,25 @@
       "types": [
         {
           "type": "expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "directive_property_access",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "directive_params",
+          "named": true
+        },
+        {
+          "type": "property_name",
           "named": true
         }
       ]
@@ -428,27 +462,26 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
-      "required": true,
+      "multiple": false,
+      "required": false,
       "types": [
         {
           "type": "expression",
           "named": true
-        },
+        }
+      ]
+    }
+  },
+  {
+    "type": "property_name",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
         {
-          "type": "output_close",
-          "named": true
-        },
-        {
-          "type": "output_close_unescaped",
-          "named": true
-        },
-        {
-          "type": "output_open",
-          "named": true
-        },
-        {
-          "type": "output_open_unescaped",
+          "type": "identifier",
           "named": true
         }
       ]
@@ -474,11 +507,19 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
         {
-          "type": "raw_directive_content",
+          "type": "directive_name",
+          "named": true
+        },
+        {
+          "type": "directive_params",
+          "named": true
+        },
+        {
+          "type": "directive_property_access",
           "named": true
         }
       ]
@@ -692,26 +733,6 @@
     "named": true
   },
   {
-    "type": "output_close",
-    "named": true
-  },
-  {
-    "type": "output_close_unescaped",
-    "named": true
-  },
-  {
-    "type": "output_open",
-    "named": true
-  },
-  {
-    "type": "output_open_unescaped",
-    "named": true
-  },
-  {
-    "type": "raw_directive_content",
-    "named": true
-  },
-  {
     "type": "raw_text",
     "named": true
   },
@@ -720,7 +741,23 @@
     "named": true
   },
   {
+    "type": "{{",
+    "named": false
+  },
+  {
     "type": "{{--",
+    "named": false
+  },
+  {
+    "type": "{{{",
+    "named": false
+  },
+  {
+    "type": "}}",
+    "named": false
+  },
+  {
+    "type": "}}}",
     "named": false
   }
 ]

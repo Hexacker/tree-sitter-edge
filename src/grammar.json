@@ -305,13 +305,92 @@
         },
         {
           "type": "SYMBOL",
-          "name": "raw_directive_content"
+          "name": "directive_name"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "directive_property_access"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "directive_params"
+                }
+              ]
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
         }
       ]
     },
-    "raw_directive_content": {
+    "directive_name": {
+      "type": "SYMBOL",
+      "name": "identifier"
+    },
+    "directive_property_access": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "."
+        },
+        {
+          "type": "SYMBOL",
+          "name": "property_name"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "directive_params"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        }
+      ]
+    },
+    "property_name": {
+      "type": "SYMBOL",
+      "name": "identifier"
+    },
+    "directive_params": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "("
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "expression"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "STRING",
+          "value": ")"
+        }
+      ]
+    },
+    "params_content": {
       "type": "PATTERN",
-      "value": "[a-zA-Z_$][a-zA-Z0-9_$\\.]*(?:\\([^)]*\\))?"
+      "value": "[^)]*"
     },
     "if_directive": {
       "type": "SEQ",
@@ -495,31 +574,6 @@
         }
       ]
     },
-    "directive_params": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "("
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "expression"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "STRING",
-          "value": ")"
-        }
-      ]
-    },
     "directive_content": {
       "type": "REPEAT1",
       "content": {
@@ -534,13 +588,8 @@
           "type": "SEQ",
           "members": [
             {
-              "type": "ALIAS",
-              "content": {
-                "type": "STRING",
-                "value": "{{"
-              },
-              "named": true,
-              "value": "output_open"
+              "type": "STRING",
+              "value": "{{"
             },
             {
               "type": "CHOICE",
@@ -555,13 +604,8 @@
               ]
             },
             {
-              "type": "ALIAS",
-              "content": {
-                "type": "STRING",
-                "value": "}}"
-              },
-              "named": true,
-              "value": "output_close"
+              "type": "STRING",
+              "value": "}}"
             }
           ]
         },
@@ -569,13 +613,8 @@
           "type": "SEQ",
           "members": [
             {
-              "type": "ALIAS",
-              "content": {
-                "type": "STRING",
-                "value": "{{{"
-              },
-              "named": true,
-              "value": "output_open_unescaped"
+              "type": "STRING",
+              "value": "{{{"
             },
             {
               "type": "CHOICE",
@@ -590,13 +629,8 @@
               ]
             },
             {
-              "type": "ALIAS",
-              "content": {
-                "type": "STRING",
-                "value": "}}}"
-              },
-              "named": true,
-              "value": "output_close_unescaped"
+              "type": "STRING",
+              "value": "}}}"
             }
           ]
         }
