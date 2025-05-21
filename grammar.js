@@ -6,6 +6,14 @@ module.exports = grammar({
     $.comment
   ],
 
+  // Add precedence declarations
+  precedences: $ => [
+    [
+      'directive',
+      'complex'
+    ]
+  ],
+
   rules: {
     source_file: $ => repeat($._node),
 
@@ -18,54 +26,23 @@ module.exports = grammar({
       $.raw_text
     ),
 
-    // HTML elements
+    // HTML elements (keep all your existing rules)
     element: $ => choice(
-      seq(
-        $.open_tag,
-        repeat($._node),
-        $.close_tag
-      ),
+      seq($.open_tag, repeat($._node), $.close_tag),
       $.self_closing_tag
     ),
 
-    open_tag: $ => seq(
-      '<',
-      $.tag_name,
-      repeat($.attribute),
-      '>'
-    ),
+    open_tag: $ => seq('<', $.tag_name, repeat($.attribute), '>'),
+    close_tag: $ => seq('</', $.tag_name, '>'),
+    self_closing_tag: $ => seq('<', $.tag_name, repeat($.attribute), '/>'),
 
-    close_tag: $ => seq(
-      '</',
-      $.tag_name,
-      '>'
-    ),
-
-    self_closing_tag: $ => seq(
-      '<',
-      $.tag_name,
-      repeat($.attribute),
-      '/>'
-    ),
-
-    doctype: $ => seq(
-      '<!DOCTYPE',
-      /\s+/,
-      'html',
-      '>'
-    ),
+    doctype: $ => seq('<!DOCTYPE', /\s+/, 'html', '>'),
 
     tag_name: $ => /[a-zA-Z][a-zA-Z0-9_\-:]*/,
 
     attribute: $ => seq(
       $.attribute_name,
-      optional(seq(
-        '=',
-        choice(
-          $.quoted_attribute_value,
-          $.attribute_value
-        )
-      ))
+      optional(seq('=', choice($.quoted_attribute_value, $.attribute_value)))
     ),
 
     attribute_name: $ => /[a-zA-Z_:][a-zA-Z0-9_:\-\.]*/,
@@ -87,20 +64,28 @@ module.exports = grammar({
       $.raw_directive
     ),
 
-    raw_directive: $ => choice(
-          // Complex case: @layout.dashboard()
-          seq('@', $.complex_directive),
+    // Fixed raw directive with precedence
+    raw_directive: $ => prec('directive', seq(
+      '@',
+      choice(
+        // Complex case like @layout.dashboard()
+        $.complex_directive,
 
-          // Simple case: @include()
-          seq('@', $.identifier, optional($.directive_params))
-        ),
-    complex_directive: $ => choice(
-          // Property access: layout.dashboard
-          seq($.identifier, '.', $.identifier, optional($.directive_params)),
+        // Simple case like @include()
+        seq($.identifier, optional($.directive_params))
+      )
+    )),
 
-          // Function call: flashMessage('notification')
-          seq($.identifier, $.directive_params)
-        ),
+    // New rule for complex directives with precedence
+    complex_directive: $ => prec('complex', choice(
+      // Property access: layout.dashboard
+      seq($.identifier, '.', $.identifier, optional($.directive_params)),
+
+      // Function call: flashMessage('notification')
+      seq($.identifier, $.directive_params)
+    )),
+
+    // Keep all your existing directive rules
     if_directive: $ => seq(
       '@if',
       $.directive_params,
@@ -155,56 +140,36 @@ module.exports = grammar({
 
     // Output expressions
     output_expression: $ => choice(
-      seq(
-        '{{',
-        optional($.expression),
-        '}}'
-      ),
-      seq(
-        '{{{',
-        optional($.expression),
-        '}}}'
-      )
+      seq('{{', optional($.expression), '}}'),
+      seq('{{{', optional($.expression), '}}}')
     ),
 
-    // Expression system
+    // Keep your expression system
     expression: $ => choice(
       $.member_expression,
-      $.primary_expression
-    ),
-
-    primary_expression: $ => choice(
+      $.method_call,
       $.identifier,
       $.string,
-      $.number,
-      $.method_call
+      $.number
     ),
 
-    // FIXED: Method call with proper optional arguments
+    member_expression: $ => prec.left(1, seq(
+      choice($.identifier, $.method_call, $.member_expression),
+      '.',
+      $.identifier
+    )),
+
     method_call: $ => seq(
-      choice(
-        $.identifier,
-        $.member_expression
-      ),
+      choice($.identifier, $.member_expression),
       '(',
-      optional($.argument_list),  // Now properly optional
+      optional($.argument_list),
       ')'
     ),
 
-    // Argument list that always requires at least one argument
     argument_list: $ => seq(
       $.expression,
       repeat(seq(',', $.expression))
     ),
-
-    member_expression: $ => prec.left(1, seq(
-      choice(
-        $.primary_expression,
-        $.member_expression
-      ),
-      '.',
-      $.identifier
-    )),
 
     // Simple terms
     identifier: $ => /[a-zA-Z_$][a-zA-Z0-9_$]*/,
@@ -213,9 +178,6 @@ module.exports = grammar({
       seq('"', /[^"]*/, '"')
     ),
     number: $ => /\d+(\.\d+)?/,
-
-    // Legacy support
-    js_expression: $ => /[^){}]+/,
 
     comment: $ => choice(
       seq('{{--', /[^-]*(-[^-}])*/, '--}}'),
