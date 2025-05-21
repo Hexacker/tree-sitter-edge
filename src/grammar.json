@@ -297,8 +297,7 @@
       ]
     },
     "raw_directive": {
-      "type": "PREC",
-      "value": "directive",
+      "type": "TOKEN",
       "content": {
         "type": "SEQ",
         "members": [
@@ -307,85 +306,8 @@
             "value": "@"
           },
           {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "complex_directive"
-              },
-              {
-                "type": "SEQ",
-                "members": [
-                  {
-                    "type": "SYMBOL",
-                    "name": "identifier"
-                  },
-                  {
-                    "type": "CHOICE",
-                    "members": [
-                      {
-                        "type": "SYMBOL",
-                        "name": "directive_params"
-                      },
-                      {
-                        "type": "BLANK"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    },
-    "complex_directive": {
-      "type": "PREC",
-      "value": "complex",
-      "content": {
-        "type": "CHOICE",
-        "members": [
-          {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "identifier"
-              },
-              {
-                "type": "STRING",
-                "value": "."
-              },
-              {
-                "type": "SYMBOL",
-                "name": "identifier"
-              },
-              {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "SYMBOL",
-                    "name": "directive_params"
-                  },
-                  {
-                    "type": "BLANK"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "identifier"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "directive_params"
-              }
-            ]
+            "type": "PATTERN",
+            "value": "[a-zA-Z_$][a-zA-Z0-9_$]*(\\.[a-zA-Z_$][a-zA-Z0-9_$]*)?(\\([^)]*\\))?"
           }
         ]
       }
@@ -858,18 +780,7 @@
     }
   ],
   "conflicts": [],
-  "precedences": [
-    [
-      {
-        "type": "STRING",
-        "value": "directive"
-      },
-      {
-        "type": "STRING",
-        "value": "complex"
-      }
-    ]
-  ],
+  "precedences": [],
   "externals": [],
   "inline": [],
   "supertypes": [],

@@ -58,25 +58,6 @@
     "fields": {}
   },
   {
-    "type": "complex_directive",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "directive_params",
-          "named": true
-        },
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "component_directive",
     "named": true,
     "fields": {},
@@ -454,29 +435,6 @@
     }
   },
   {
-    "type": "raw_directive",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "complex_directive",
-          "named": true
-        },
-        {
-          "type": "directive_params",
-          "named": true
-        },
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "self_closing_tag",
     "named": true,
     "fields": {},
@@ -616,10 +574,6 @@
     "named": false
   },
   {
-    "type": "@",
-    "named": false
-  },
-  {
     "type": "@component",
     "named": false
   },
@@ -677,6 +631,10 @@
   },
   {
     "type": "number",
+    "named": true
+  },
+  {
+    "type": "raw_directive",
     "named": true
   },
   {
