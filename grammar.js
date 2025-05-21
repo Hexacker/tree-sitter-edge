@@ -110,6 +110,11 @@ module.exports = grammar({
       seq('@elseif', $.directive_params, $.directive_content)
     ),
 
+    output_expression: $ => choice(
+      seq('{{', optional($.js_expression), '}}'),
+      seq('{{{', optional($.js_expression), '}}}')
+    ),
+
     each_directive: $ => seq(
       '@each',
       $.directive_params,
