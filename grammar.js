@@ -18,6 +18,7 @@ module.exports = grammar({
       $.raw_text
     ),
 
+    // HTML elements
     element: $ => choice(
       seq(
         $.open_tag,
@@ -86,33 +87,30 @@ module.exports = grammar({
       $.raw_directive
     ),
 
-    // Raw directive with simpler structure
-    raw_directive: $ => seq(
-      '@',
-      $.directive_name,
-      optional(choice(
-        $.directive_property_access,
+    // Raw directive with component-based parsing
+    raw_directive: $ => choice(
+      // Simple directives like @csrf
+      seq(
+        '@',
+        alias($.identifier, $.directive_name)
+      ),
+
+      // Complex directives with property access like @layout.dashboard()
+      seq(
+        '@',
+        alias($.identifier, $.directive_name),
+        '.',
+        alias($.identifier, $.property_name),
+        optional($.directive_params)
+      ),
+
+      // Simple directives with parameters like @flashMessage('notification')
+      seq(
+        '@',
+        alias($.identifier, $.directive_name),
         $.directive_params
-      ))
+      )
     ),
-
-    directive_name: $ => $.identifier,
-
-    directive_property_access: $ => seq(
-      '.',
-      $.property_name,
-      optional($.directive_params)
-    ),
-
-    property_name: $ => $.identifier,
-
-    directive_params: $ => seq(
-      '(',
-      optional($.params_content),
-      ')'
-    ),
-
-    params_content: $ => /[^)]*/,
 
     if_directive: $ => seq(
       '@if',
@@ -175,17 +173,17 @@ module.exports = grammar({
 
     directive_content: $ => repeat1($._node),
 
-    // Output expressions with explicit bracket nodes
+    // Improved output expression parsing
     output_expression: $ => choice(
       seq(
-        '{{',
+        alias('{{', $.output_open),
         optional($.expression),
-        '}}'
+        alias('}}', $.output_close)
       ),
       seq(
-        '{{{',
+        alias('{{{', $.output_open_unescaped),
         optional($.expression),
-        '}}}'
+        alias('}}}', $.output_close_unescaped)
       )
     ),
 
