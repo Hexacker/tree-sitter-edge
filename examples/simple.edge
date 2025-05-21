@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{ title }}</title>
+</head>
+<body>
+  <div class="container">
+    @if(user)
+      <h1>Welcome, {{ user.name }}</h1>
+      
+      @if(user.isAdmin)
+        <span class="badge">Admin</span>
+      @end
+      
+      <ul>
+        @each(item in items)
+          <li>{{ item.name }} - ${{ item.price }}</li>
+        @end
+      </ul>
+    @else
+      <h1>Welcome, Guest</h1>
+      <p>Please <a href="/login">login</a> to continue</p>
+    @end
+    
+    {{-- This is a comment that won't be rendered --}}
+  </div>
+</body>
+</html>

@@ -1,0 +1,30 @@
+=================
+If directive
+=================
+
+@if(user.isLoggedIn)
+  <p>Welcome back, {{ user.name }}</p>
+@else
+  <p>Please log in</p>
+@end
+
+---
+
+(source_file
+  (if_directive
+    (directive_params
+      (js_expression))
+    (element
+      (open_tag
+        (tag_name))
+      (output_expression
+        (js_expression))
+      (close_tag
+        (tag_name)))
+    (else_directive
+      (element
+        (open_tag
+          (tag_name))
+        (raw_text)
+        (close_tag
+          (tag_name))))))

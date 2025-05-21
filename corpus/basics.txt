@@ -1,0 +1,27 @@
+==================
+Basic template
+==================
+
+<div class="container">
+  <h1>{{ title }}</h1>
+</div>
+
+---
+
+(source_file
+  (element
+    (open_tag
+      (tag_name)
+      (attribute
+        (attribute_name)
+        (quoted_attribute_value
+          (attribute_content))))
+    (element
+      (open_tag
+        (tag_name))
+      (output_expression
+        (js_expression))
+      (close_tag
+        (tag_name)))
+    (close_tag
+      (tag_name))))

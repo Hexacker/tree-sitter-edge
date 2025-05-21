@@ -1,0 +1,35 @@
+{
+  "name": "tree-sitter-edge",
+  "version": "1.0.0",
+  "description": "Edge template language grammar for tree-sitter",
+  "main": "bindings/node",
+  "scripts": {
+    "test": "tree-sitter test",
+    "build": "tree-sitter generate",
+    "parse": "tree-sitter parse"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hexacker/tree-sitter-edge.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Hexacker/tree-sitter-edge/issues"
+  },
+  "homepage": "https://github.com/Hexacker/tree-sitter-edge#readme",
+  "devDependencies": {
+    "tree-sitter": "^0.22.4"
+  },
+  "dependencies": {
+    "nan": "^2.22.2"
+  },
+  "tree-sitter": [
+      {
+        "scope": "source.edge",
+        "file-types": ["edge"]
+      }
+  ]
+
+}
