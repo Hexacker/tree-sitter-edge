@@ -13,8 +13,7 @@ module.exports = grammar({
       $.doctype,
       $.element,
       $.directive,
-      $.escaped_output,
-      $.unescaped_output,
+      $.output_expression,
       $.comment,
       $.raw_text
     ),
@@ -85,13 +84,12 @@ module.exports = grammar({
       $.slot_directive,
       $.include_directive,
       $.let_directive,
-      $.complex_directive
+      $.raw_directive
     ),
 
-    // NEW: Complex directive for @layout.dashboard() style syntax
-    complex_directive: $ => seq(
+    raw_directive: $ => seq(
       '@',
-      $.complex_expression
+      $.expression
     ),
 
     if_directive: $ => seq(
@@ -140,79 +138,75 @@ module.exports = grammar({
 
     directive_params: $ => seq(
       '(',
-      optional($.js_expression),
+      optional($.expression),
       ')'
     ),
 
     directive_content: $ => repeat1($._node),
 
     // Output expressions
-    escaped_output: $ => seq(
-      '{{',
-      optional($.complex_expression),
-      '}}'
+    output_expression: $ => choice(
+      seq(
+        '{{',
+        optional($.expression),
+        '}}'
+      ),
+      seq(
+        '{{{',
+        optional($.expression),
+        '}}}'
+      )
     ),
 
-    unescaped_output: $ => seq(
-      '{{{',
-      optional($.complex_expression),
-      '}}}'
+    // Expression system
+    expression: $ => choice(
+      $.member_expression,
+      $.primary_expression
     ),
 
-    // NEW: Enhanced expression handling
-    complex_expression: $ => choice(
-      $.method_chain,
-      $.property_chain,
-      $.method_call,
-      $.identifier
-    ),
-
-    property_chain: $ => seq(
-      choice($.identifier, $.method_call),
-      '.',
-      choice($.identifier, $.property_chain, $.method_call)
-    ),
-
-    method_chain: $ => seq(
-      $.method_call,
-      '.',
-      choice($.identifier, $.method_call, $.property_chain)
-    ),
-
-    method_call: $ => seq(
+    primary_expression: $ => choice(
       $.identifier,
+      $.string,
+      $.number,
+      $.method_call
+    ),
+
+    // FIXED: Method call with proper optional arguments
+    method_call: $ => seq(
+      choice(
+        $.identifier,
+        $.member_expression
+      ),
       '(',
-      optional($.call_arguments),
+      optional($.argument_list),  // Now properly optional
       ')'
     ),
 
-    call_arguments: $ => seq(
-      $.argument,
-      repeat(seq(',', $.argument))
+    // Argument list that always requires at least one argument
+    argument_list: $ => seq(
+      $.expression,
+      repeat(seq(',', $.expression))
     ),
 
-    argument: $ => choice(
-      $.identifier,
-      $.property_chain,
-      $.method_call,
-      $.string_literal,
-      $.number_literal
-    ),
+    member_expression: $ => prec.left(1, seq(
+      choice(
+        $.primary_expression,
+        $.member_expression
+      ),
+      '.',
+      $.identifier
+    )),
 
-    // Simple expressions for backward compatibility
-    js_expression: $ => choice(
-      $.complex_expression,
-      /[^){}]+/
-    ),
-
+    // Simple terms
     identifier: $ => /[a-zA-Z_$][a-zA-Z0-9_$]*/,
-
-    string_literal: $ => choice(
-      seq("'", optional(/[^']*/), "'"),
-      seq('"', optional(/[^"]*/), '"')
+    string: $ => choice(
+      seq("'", /[^']*/, "'"),
+      seq('"', /[^"]*/, '"')
     ),
+    number: $ => /\d+(\.\d+)?/,
 
-    number_literal: $ => /\d+(\.\d+)?/,
+    // Legacy support
+    js_expression: $ => /[^){}]+/,
 
     comment: $ => choice(
       seq('{{--', /[^-]*(-[^-}])*/, '--}}'),
