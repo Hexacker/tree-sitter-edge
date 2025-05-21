@@ -1,6 +1,14 @@
 module.exports = grammar({
   name: 'edge',
 
+  externals: $ => [
+    $.DIRECTIVE_AT,
+    $.DIRECTIVE_NAME,
+    $.DIRECTIVE_DOT,
+    $.DIRECTIVE_METHOD,
+    $.DIRECTIVE_ARGS
+  ],
+
   extras: $ => [
     /\s/,
     $.comment
@@ -88,10 +96,15 @@ module.exports = grammar({
     ),
 
     // Token-based raw directive approach
-    raw_directive: $ => token(seq(
-      '@',
-      /[a-zA-Z_$][a-zA-Z0-9_$]*(\.[a-zA-Z_$][a-zA-Z0-9_$]*)?(\([^)]*\))?/
-    )),
+    raw_directive: $ => seq(
+          $.DIRECTIVE_AT,
+          $.DIRECTIVE_NAME,
+          optional(seq(
+            $.DIRECTIVE_DOT,
+            $.DIRECTIVE_METHOD
+          )),
+          optional($.DIRECTIVE_ARGS)
+    ),
 
     if_directive: $ => seq(
       '@if',
