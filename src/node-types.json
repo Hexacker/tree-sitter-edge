@@ -116,6 +116,11 @@
     }
   },
   {
+    "type": "directive_args",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "directive_content",
     "named": true,
     "fields": {},
@@ -454,6 +459,29 @@
     }
   },
   {
+    "type": "raw_directive",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "directive_args",
+          "named": true
+        },
+        {
+          "type": "directive_name",
+          "named": true
+        },
+        {
+          "type": "method_name",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "self_closing_tag",
     "named": true,
     "fields": {},
@@ -593,6 +621,10 @@
     "named": false
   },
   {
+    "type": "@",
+    "named": false
+  },
+  {
     "type": "@component",
     "named": false
   },
@@ -641,6 +673,10 @@
     "named": true
   },
   {
+    "type": "directive_name",
+    "named": true
+  },
+  {
     "type": "html",
     "named": false
   },
@@ -653,11 +689,11 @@
     "named": false
   },
   {
-    "type": "number",
+    "type": "method_name",
     "named": true
   },
   {
-    "type": "raw_directive",
+    "type": "number",
     "named": true
   },
   {

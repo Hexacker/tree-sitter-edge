@@ -6,6 +6,15 @@ module.exports = grammar({
     $.comment
   ],
 
+  // Fix the precedences declaration syntax
+  precedences: () => [
+    [
+      'member',
+      'call',
+      'directive'
+    ]
+  ],
+
   rules: {
     source_file: $ => repeat($._node),
 
@@ -18,7 +27,7 @@ module.exports = grammar({
       $.raw_text
     ),
 
-    // HTML elements (keep these the same)
+    // HTML elements
     element: $ => choice(
       seq(
         $.open_tag,
@@ -87,11 +96,28 @@ module.exports = grammar({
       $.raw_directive
     ),
 
-    // BACK TO TOKEN-BASED APPROACH - This works!
-    raw_directive: $ => token(seq(
+    // IMPORTANT: Break down raw directives into components
+    raw_directive: $ => seq(
       '@',
-      /[a-zA-Z_$][a-zA-Z0-9_$]*(\.[a-zA-Z_$][a-zA-Z0-9_$]*)?(\([^)]*\))?/
-    )),
+      alias($.identifier, $.directive_name),
+      optional(choice(
+        // Property access like @layout.dashboard()
+        prec('member', seq(
+          '.',
+          alias($.identifier, $.method_name),
+          optional($.directive_args)
+        )),
+        // Direct method call like @flashMessage('notification')
+        prec('call', $.directive_args)
+      ))
+    ),
+
+    // Simple parameters in parentheses
+    directive_args: $ => seq(
+      '(',
+      optional(/[^)]*/),
+      ')'
+    ),
 
     if_directive: $ => seq(
       '@if',
@@ -106,7 +132,7 @@ module.exports = grammar({
       seq('@elseif', $.directive_params, $.directive_content)
     ),
 
-    // FIXED: each_directive with special each_params rule
+    // Fixed each directive for @each(item in items) syntax
     each_directive: $ => seq(
       '@each',
       $.each_params,
@@ -114,7 +140,6 @@ module.exports = grammar({
       '@end'
     ),
 
-    // NEW: Special params rule for @each(item in items)
     each_params: $ => seq(
       '(',
       $.identifier,    // item
