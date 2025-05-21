@@ -18,7 +18,7 @@ module.exports = grammar({
       $.raw_text
     ),
 
-    // HTML elements
+    // HTML elements (keep these the same)
     element: $ => choice(
       seq(
         $.open_tag,
@@ -87,39 +87,11 @@ module.exports = grammar({
       $.raw_directive
     ),
 
-    // Enhanced raw_directive with component-based parsing
-    raw_directive: $ => seq(
+    // BACK TO TOKEN-BASED APPROACH - This works!
+    raw_directive: $ => token(seq(
       '@',
-      $.directive_base,
-      optional($.directive_extension)
-    ),
-
-    // Base identifier for the directive (@layout or @flashMessage)
-    directive_base: $ => /[a-zA-Z_$][a-zA-Z0-9_$]*/,
-
-    // Extension part (.dashboard() or ('notification'))
-    directive_extension: $ => choice(
-      // Property access (.dashboard)
-      seq(
-        '.',
-        $.directive_property
-      ),
-      // Direct method call
-      $.directive_args
-    ),
-
-    // Property name after the dot, with optional args
-    directive_property: $ => seq(
-      /[a-zA-Z_$][a-zA-Z0-9_$]*/,
-      optional($.directive_args)
-    ),
-
-    // Arguments in parentheses
-    directive_args: $ => seq(
-      '(',
-      optional(/[^)]*/),
-      ')'
-    ),
+      /[a-zA-Z_$][a-zA-Z0-9_$]*(\.[a-zA-Z_$][a-zA-Z0-9_$]*)?(\([^)]*\))?/
+    )),
 
     if_directive: $ => seq(
       '@if',

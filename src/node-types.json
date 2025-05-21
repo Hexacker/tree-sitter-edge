@@ -116,16 +116,6 @@
     }
   },
   {
-    "type": "directive_args",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "directive_base",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "directive_content",
     "named": true,
     "fields": {},
@@ -161,25 +151,6 @@
     }
   },
   {
-    "type": "directive_extension",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "directive_args",
-          "named": true
-        },
-        {
-          "type": "directive_property",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "directive_params",
     "named": true,
     "fields": {},
@@ -189,21 +160,6 @@
       "types": [
         {
           "type": "expression",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "directive_property",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "directive_args",
           "named": true
         }
       ]
@@ -348,11 +304,6 @@
         }
       ]
     }
-  },
-  {
-    "type": "identifier",
-    "named": true,
-    "fields": {}
   },
   {
     "type": "if_directive",
@@ -503,25 +454,6 @@
     }
   },
   {
-    "type": "raw_directive",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "directive_base",
-          "named": true
-        },
-        {
-          "type": "directive_extension",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "self_closing_tag",
     "named": true,
     "fields": {},
@@ -661,10 +593,6 @@
     "named": false
   },
   {
-    "type": "@",
-    "named": false
-  },
-  {
     "type": "@component",
     "named": false
   },
@@ -717,11 +645,19 @@
     "named": false
   },
   {
+    "type": "identifier",
+    "named": true
+  },
+  {
     "type": "in",
     "named": false
   },
   {
     "type": "number",
+    "named": true
+  },
+  {
+    "type": "raw_directive",
     "named": true
   },
   {
