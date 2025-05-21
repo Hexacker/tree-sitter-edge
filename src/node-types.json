@@ -174,7 +174,7 @@
       "required": false,
       "types": [
         {
-          "type": "expression",
+          "type": "string_content",
           "named": true
         }
       ]
@@ -734,6 +734,10 @@
   },
   {
     "type": "raw_text",
+    "named": true
+  },
+  {
+    "type": "string_content",
     "named": true
   },
   {
