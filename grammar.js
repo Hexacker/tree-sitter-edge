@@ -6,15 +6,6 @@ module.exports = grammar({
     $.comment
   ],
 
-  // Fix the precedences declaration syntax
-  precedences: () => [
-    [
-      'member',
-      'call',
-      'directive'
-    ]
-  ],
-
   rules: {
     source_file: $ => repeat($._node),
 
@@ -96,28 +87,11 @@ module.exports = grammar({
       $.raw_directive
     ),
 
-    // IMPORTANT: Break down raw directives into components
-    raw_directive: $ => seq(
+    // Token-based raw directive approach
+    raw_directive: $ => token(seq(
       '@',
-      alias($.identifier, $.directive_name),
-      optional(choice(
-        // Property access like @layout.dashboard()
-        prec('member', seq(
-          '.',
-          alias($.identifier, $.method_name),
-          optional($.directive_args)
-        )),
-        // Direct method call like @flashMessage('notification')
-        prec('call', $.directive_args)
-      ))
-    ),
-
-    // Simple parameters in parentheses
-    directive_args: $ => seq(
-      '(',
-      optional(/[^)]*/),
-      ')'
-    ),
+      /[a-zA-Z_$][a-zA-Z0-9_$]*(\.[a-zA-Z_$][a-zA-Z0-9_$]*)?(\([^)]*\))?/
+    )),
 
     if_directive: $ => seq(
       '@if',
