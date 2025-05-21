@@ -474,19 +474,11 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
-          "type": "directive_name",
-          "named": true
-        },
-        {
-          "type": "directive_params",
-          "named": true
-        },
-        {
-          "type": "property_name",
+          "type": "raw_directive_content",
           "named": true
         }
       ]
@@ -684,10 +676,6 @@
     "named": true
   },
   {
-    "type": "directive_name",
-    "named": true
-  },
-  {
     "type": "html",
     "named": false
   },
@@ -720,7 +708,7 @@
     "named": true
   },
   {
-    "type": "property_name",
+    "type": "raw_directive_content",
     "named": true
   },
   {

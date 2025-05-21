@@ -18,7 +18,7 @@ module.exports = grammar({
       $.raw_text
     ),
 
-    // HTML elements
+    // HTML elements (keep the same)
     element: $ => choice(
       seq(
         $.open_tag,
@@ -27,6 +27,8 @@ module.exports = grammar({
       ),
       $.self_closing_tag
     ),
+
+    // Keep all your HTML tag related rules...
 
     open_tag: $ => seq(
       '<',
@@ -87,30 +89,16 @@ module.exports = grammar({
       $.raw_directive
     ),
 
-    // Raw directive with component-based parsing
-    raw_directive: $ => choice(
-      // Simple directives like @csrf
-      seq(
-        '@',
-        alias($.identifier, $.directive_name)
-      ),
-
-      // Complex directives with property access like @layout.dashboard()
-      seq(
-        '@',
-        alias($.identifier, $.directive_name),
-        '.',
-        alias($.identifier, $.property_name),
-        optional($.directive_params)
-      ),
-
-      // Simple directives with parameters like @flashMessage('notification')
-      seq(
-        '@',
-        alias($.identifier, $.directive_name),
-        $.directive_params
-      )
+    // Simple structure for raw directives - just parse the @ part for now
+    raw_directive: $ => seq(
+      '@',
+      $.raw_directive_content
     ),
+
+    // Use a regex to match the rest of the directive, to be split later for highlighting
+    raw_directive_content: $ => /[a-zA-Z_$][a-zA-Z0-9_$\.]*(?:\([^)]*\))?/,
+
+    // Keep all your other directives unchanged
 
     if_directive: $ => seq(
       '@if',
@@ -125,7 +113,6 @@ module.exports = grammar({
       seq('@elseif', $.directive_params, $.directive_content)
     ),
 
-    // Fixed each directive for @each(item in items) syntax
     each_directive: $ => seq(
       '@each',
       $.each_params,
@@ -173,7 +160,7 @@ module.exports = grammar({
 
     directive_content: $ => repeat1($._node),
 
-    // Improved output expression parsing
+    // Output expressions with explicit bracket nodes
     output_expression: $ => choice(
       seq(
         alias('{{', $.output_open),
@@ -187,7 +174,7 @@ module.exports = grammar({
       )
     ),
 
-    // Expression system
+    // Expression system (keep the same)
     expression: $ => choice(
       $.member_expression,
       $.method_call,
