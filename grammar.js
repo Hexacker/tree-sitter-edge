@@ -149,18 +149,15 @@ module.exports = grammar({
     raw_directive: $ => seq(
       '@',
       choice(
-        seq($.edge_helper, $.directive_params),
-        seq($.identifier, $.directive_params),
-        $.method_call,
-        $.property_access,
+        $.full_expression,
         $.identifier
       )
     ),
 
-    directive_params: $ => seq(
-      '(',
-      optional($.js_expression),
-      ')'
+    // Add this new rule
+    full_expression: $ => choice(
+      seq($.identifier, '.', $.identifier, optional($.directive_params)),
+      seq($.identifier, $.directive_params)
     ),
 
     directive_content: $ => repeat1($._node),
