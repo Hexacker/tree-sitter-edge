@@ -1,10 +1,12 @@
-const root = require("path").join(__dirname, "..", "..");
-
-module.exports =
-  typeof process.versions.bun === "string"
-    // Support `bun build --compile` by being statically analyzable enough to find the .node file at build-time
-    ? require(`../../prebuilds/${process.platform}-${process.arch}/tree-sitter-edge.node`)
-    : require("node-gyp-build")(root);
+try {
+  module.exports = require("../../build/Release/tree_sitter_edge_binding.node");
+} catch (error) {
+  try {
+    module.exports = require("../../build/Debug/tree_sitter_edge_binding.node");
+  } catch (_) {
+    throw error;
+  }
+}
 
 try {
   module.exports.nodeTypeInfo = require("../../src/node-types.json");
