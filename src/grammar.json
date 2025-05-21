@@ -303,13 +303,8 @@
           "type": "SEQ",
           "members": [
             {
-              "type": "ALIAS",
-              "content": {
-                "type": "STRING",
-                "value": "@"
-              },
-              "named": true,
-              "value": "directive_symbol"
+              "type": "STRING",
+              "value": "@"
             },
             {
               "type": "ALIAS",
@@ -326,13 +321,8 @@
           "type": "SEQ",
           "members": [
             {
-              "type": "ALIAS",
-              "content": {
-                "type": "STRING",
-                "value": "@"
-              },
-              "named": true,
-              "value": "directive_symbol"
+              "type": "STRING",
+              "value": "@"
             },
             {
               "type": "ALIAS",
@@ -344,13 +334,8 @@
               "value": "directive_name"
             },
             {
-              "type": "ALIAS",
-              "content": {
-                "type": "STRING",
-                "value": "."
-              },
-              "named": true,
-              "value": "directive_dot"
+              "type": "STRING",
+              "value": "."
             },
             {
               "type": "ALIAS",
@@ -366,7 +351,7 @@
               "members": [
                 {
                   "type": "SYMBOL",
-                  "name": "parameter_list"
+                  "name": "directive_params"
                 },
                 {
                   "type": "BLANK"
@@ -379,13 +364,8 @@
           "type": "SEQ",
           "members": [
             {
-              "type": "ALIAS",
-              "content": {
-                "type": "STRING",
-                "value": "@"
-              },
-              "named": true,
-              "value": "directive_symbol"
+              "type": "STRING",
+              "value": "@"
             },
             {
               "type": "ALIAS",
@@ -398,49 +378,9 @@
             },
             {
               "type": "SYMBOL",
-              "name": "parameter_list"
+              "name": "directive_params"
             }
           ]
-        }
-      ]
-    },
-    "parameter_list": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "STRING",
-            "value": "("
-          },
-          "named": true,
-          "value": "param_open"
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "ALIAS",
-              "content": {
-                "type": "PATTERN",
-                "value": "[^)]*"
-              },
-              "named": true,
-              "value": "parameter_content"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "STRING",
-            "value": ")"
-          },
-          "named": true,
-          "value": "param_close"
         }
       ]
     },
@@ -665,8 +605,13 @@
           "type": "SEQ",
           "members": [
             {
-              "type": "STRING",
-              "value": "{{"
+              "type": "ALIAS",
+              "content": {
+                "type": "STRING",
+                "value": "{{"
+              },
+              "named": true,
+              "value": "output_open"
             },
             {
               "type": "CHOICE",
@@ -681,8 +626,13 @@
               ]
             },
             {
-              "type": "STRING",
-              "value": "}}"
+              "type": "ALIAS",
+              "content": {
+                "type": "STRING",
+                "value": "}}"
+              },
+              "named": true,
+              "value": "output_close"
             }
           ]
         },
@@ -690,8 +640,13 @@
           "type": "SEQ",
           "members": [
             {
-              "type": "STRING",
-              "value": "{{{"
+              "type": "ALIAS",
+              "content": {
+                "type": "STRING",
+                "value": "{{{"
+              },
+              "named": true,
+              "value": "output_open_unescaped"
             },
             {
               "type": "CHOICE",
@@ -706,8 +661,13 @@
               ]
             },
             {
-              "type": "STRING",
-              "value": "}}}"
+              "type": "ALIAS",
+              "content": {
+                "type": "STRING",
+                "value": "}}}"
+              },
+              "named": true,
+              "value": "output_close_unescaped"
             }
           ]
         }

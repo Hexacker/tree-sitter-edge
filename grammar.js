@@ -6,8 +6,6 @@ module.exports = grammar({
     $.comment
   ],
 
-  // Remove unnecessary conflicts section
-
   rules: {
     source_file: $ => repeat($._node),
 
@@ -78,7 +76,7 @@ module.exports = grammar({
     ),
     attribute_content: $ => /[^"']*/,
 
-    // Edge directives - removed else_directive from here
+    // Edge directives
     directive: $ => choice(
       $.if_directive,
       $.each_directive,
@@ -89,36 +87,29 @@ module.exports = grammar({
       $.raw_directive
     ),
 
-    // Component-based raw directive parsing
+    // Raw directive with component-based parsing
     raw_directive: $ => choice(
       // Simple directives like @csrf
       seq(
-        alias('@', $.directive_symbol),
+        '@',
         alias($.identifier, $.directive_name)
       ),
 
       // Complex directives with property access like @layout.dashboard()
       seq(
-        alias('@', $.directive_symbol),
+        '@',
         alias($.identifier, $.directive_name),
-        alias('.', $.directive_dot),
+        '.',
         alias($.identifier, $.property_name),
-        optional($.parameter_list)
+        optional($.directive_params)
       ),
 
       // Simple directives with parameters like @flashMessage('notification')
       seq(
-        alias('@', $.directive_symbol),
+        '@',
         alias($.identifier, $.directive_name),
-        $.parameter_list
+        $.directive_params
       )
-    ),
-
-    // Parameters in parentheses
-    parameter_list: $ => seq(
-      alias('(', $.param_open),
-      optional(alias(/[^)]*/, $.parameter_content)),
-      alias(')', $.param_close)
     ),
 
     if_directive: $ => seq(
@@ -182,17 +173,17 @@ module.exports = grammar({
 
     directive_content: $ => repeat1($._node),
 
-    // Output expressions
+    // Improved output expression parsing
     output_expression: $ => choice(
       seq(
-        '{{',
+        alias('{{', $.output_open),
         optional($.expression),
-        '}}'
+        alias('}}', $.output_close)
       ),
       seq(
-        '{{{',
+        alias('{{{', $.output_open_unescaped),
         optional($.expression),
-        '}}}'
+        alias('}}}', $.output_close_unescaped)
       )
     ),
 

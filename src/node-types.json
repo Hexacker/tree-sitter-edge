@@ -428,34 +428,27 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "expression",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "parameter_list",
-    "named": true,
-    "fields": {},
-    "children": {
       "multiple": true,
       "required": true,
       "types": [
         {
-          "type": "param_close",
+          "type": "expression",
           "named": true
         },
         {
-          "type": "param_open",
+          "type": "output_close",
           "named": true
         },
         {
-          "type": "parameter_content",
+          "type": "output_close_unescaped",
+          "named": true
+        },
+        {
+          "type": "output_open",
+          "named": true
+        },
+        {
+          "type": "output_open_unescaped",
           "named": true
         }
       ]
@@ -485,19 +478,11 @@
       "required": true,
       "types": [
         {
-          "type": "directive_dot",
-          "named": true
-        },
-        {
           "type": "directive_name",
           "named": true
         },
         {
-          "type": "directive_symbol",
-          "named": true
-        },
-        {
-          "type": "parameter_list",
+          "type": "directive_params",
           "named": true
         },
         {
@@ -647,6 +632,10 @@
     "named": false
   },
   {
+    "type": "@",
+    "named": false
+  },
+  {
     "type": "@component",
     "named": false
   },
@@ -695,15 +684,7 @@
     "named": true
   },
   {
-    "type": "directive_dot",
-    "named": true
-  },
-  {
     "type": "directive_name",
-    "named": true
-  },
-  {
-    "type": "directive_symbol",
     "named": true
   },
   {
@@ -723,15 +704,19 @@
     "named": true
   },
   {
-    "type": "param_close",
+    "type": "output_close",
     "named": true
   },
   {
-    "type": "param_open",
+    "type": "output_close_unescaped",
     "named": true
   },
   {
-    "type": "parameter_content",
+    "type": "output_open",
+    "named": true
+  },
+  {
+    "type": "output_open_unescaped",
     "named": true
   },
   {
@@ -747,23 +732,7 @@
     "named": true
   },
   {
-    "type": "{{",
-    "named": false
-  },
-  {
     "type": "{{--",
-    "named": false
-  },
-  {
-    "type": "{{{",
-    "named": false
-  },
-  {
-    "type": "}}",
-    "named": false
-  },
-  {
-    "type": "}}}",
     "named": false
   }
 ]
