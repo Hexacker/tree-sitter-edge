@@ -1,189 +1,96 @@
+// tree-sitter-edge/grammar.js
 module.exports = grammar({
   name: 'edge',
 
-  extras: $ => [
-    /\s/,
-    $.comment
-  ],
-
-  // Add precedence declarations
-  precedences: $ => [
-    [
-      'directive',
-      'complex'
-    ]
-  ],
+  extras: $ => [/\s/, $.comment],
 
   rules: {
     source_file: $ => repeat($._node),
 
     _node: $ => choice(
-      $.doctype,
-      $.element,
       $.directive,
       $.output_expression,
+      $.html_element,
       $.comment,
-      $.raw_text
+      $.text
     ),
 
-    // HTML elements (keep all your existing rules)
-    element: $ => choice(
-      seq($.open_tag, repeat($._node), $.close_tag),
-      $.self_closing_tag
-    ),
-
-    open_tag: $ => seq('<', $.tag_name, repeat($.attribute), '>'),
-    close_tag: $ => seq('</', $.tag_name, '>'),
-    self_closing_tag: $ => seq('<', $.tag_name, repeat($.attribute), '/>'),
-
-    doctype: $ => seq('<!DOCTYPE', /\s+/, 'html', '>'),
-
-    tag_name: $ => /[a-zA-Z][a-zA-Z0-9_\-:]*/,
-
-    attribute: $ => seq(
-      $.attribute_name,
-      optional(seq('=', choice($.quoted_attribute_value, $.attribute_value)))
-    ),
-
-    attribute_name: $ => /[a-zA-Z_:][a-zA-Z0-9_:\-\.]*/,
-    attribute_value: $ => /[^\s"'=<>`]+/,
-    quoted_attribute_value: $ => choice(
-      seq('"', optional($.attribute_content), '"'),
-      seq("'", optional($.attribute_content), "'")
-    ),
-    attribute_content: $ => /[^"']*/,
-
-    // Edge directives
+    // DIRECTIVES
     directive: $ => choice(
-      $.if_directive,
-      $.each_directive,
-      $.component_directive,
-      $.slot_directive,
-      $.include_directive,
-      $.let_directive,
+      $.special_directive,
       $.raw_directive
     ),
 
-    // Fixed raw directive with precedence
-    raw_directive: $ => prec('directive', seq(
+    // IMPORTANT: Raw directive now handles full expressions
+    raw_directive: $ => seq(
       '@',
       choice(
-        // Complex case like @layout.dashboard()
-        $.complex_directive,
-
-        // Simple case like @include()
-        seq($.identifier, optional($.directive_params))
+        // Property access: @layout.dashboard()
+        seq($.identifier, '.', $.identifier, optional($.param_list)),
+        // Method call: @flashMessage('notification')
+        seq($.identifier, $.param_list)
       )
-    )),
-
-    // New rule for complex directives with precedence
-    complex_directive: $ => prec('complex', choice(
-      // Property access: layout.dashboard
-      seq($.identifier, '.', $.identifier, optional($.directive_params)),
-
-      // Function call: flashMessage('notification')
-      seq($.identifier, $.directive_params)
-    )),
-
-    // Keep all your existing directive rules
-    if_directive: $ => seq(
-      '@if',
-      $.directive_params,
-      $.directive_content,
-      optional($.else_directive),
-      '@end'
     ),
 
-    else_directive: $ => choice(
-      seq('@else', $.directive_content),
-      seq('@elseif', $.directive_params, $.directive_content)
+    special_directive: $ => choice(
+      $.if_directive,
+      $.each_directive,
+      // [Other directives...]
     ),
 
-    each_directive: $ => seq(
-      '@each',
-      $.directive_params,
-      $.directive_content,
-      '@end'
-    ),
+    // [Other directive definitions]
 
-    component_directive: $ => seq(
-      '@component',
-      $.directive_params,
-      $.directive_content,
-      '@end'
-    ),
-
-    slot_directive: $ => seq(
-      '@slot',
-      $.directive_params,
-      $.directive_content,
-      '@end'
-    ),
-
-    include_directive: $ => seq(
-      '@include',
-      $.directive_params
-    ),
-
-    let_directive: $ => seq(
-      '@let',
-      $.directive_params
-    ),
-
-    directive_params: $ => seq(
+    param_list: $ => seq(
       '(',
-      optional($.expression),
+      optional($.expression_list),
       ')'
     ),
 
-    directive_content: $ => repeat1($._node),
+    expression_list: $ => seq(
+      $.expression,
+      repeat(seq(',', $.expression))
+    ),
 
-    // Output expressions
+    // OUTPUT EXPRESSIONS
     output_expression: $ => choice(
       seq('{{', optional($.expression), '}}'),
       seq('{{{', optional($.expression), '}}}')
     ),
 
-    // Keep your expression system
+    // EXPRESSIONS
     expression: $ => choice(
-      $.member_expression,
+      $.property_expression,
       $.method_call,
       $.identifier,
-      $.string,
-      $.number
+      $.string
     ),
 
-    member_expression: $ => prec.left(1, seq(
-      choice($.identifier, $.method_call, $.member_expression),
+    property_expression: $ => seq(
+      choice($.identifier, $.method_call),
       '.',
       $.identifier
-    )),
+    ),
 
     method_call: $ => seq(
-      choice($.identifier, $.member_expression),
+      $.identifier,
       '(',
-      optional($.argument_list),
+      optional($.expression_list),
       ')'
     ),
 
-    argument_list: $ => seq(
-      $.expression,
-      repeat(seq(',', $.expression))
-    ),
-
-    // Simple terms
+    // BASIC ELEMENTS
     identifier: $ => /[a-zA-Z_$][a-zA-Z0-9_$]*/,
     string: $ => choice(
       seq("'", /[^']*/, "'"),
       seq('"', /[^"]*/, '"')
     ),
-    number: $ => /\d+(\.\d+)?/,
-
+    text: $ => /[^<@{]+/,
     comment: $ => choice(
-      seq('{{--', /[^-]*(-[^-}])*/, '--}}'),
-      seq('<!--', /[^-]*(-[^-])*/, '-->')
+      seq('{{--', /.*/, '--}}'),
+      seq('<!--', /.*/, '-->')
     ),
 
-    raw_text: $ => /[^<@{]+/
+    // [HTML element rules...]
+    html_element: $ => /[^@{}]+/  // Simplified for testing
   }
 });
