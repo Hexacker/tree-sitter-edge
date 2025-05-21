@@ -375,7 +375,7 @@
           "members": [
             {
               "type": "SYMBOL",
-              "name": "string_content"
+              "name": "expression"
             },
             {
               "type": "BLANK"
@@ -388,7 +388,7 @@
         }
       ]
     },
-    "string_content": {
+    "params_content": {
       "type": "PATTERN",
       "value": "[^)]*"
     },

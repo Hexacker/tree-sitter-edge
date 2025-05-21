@@ -18,7 +18,6 @@ module.exports = grammar({
       $.raw_text
     ),
 
-    // HTML elements
     element: $ => choice(
       seq(
         $.open_tag,
@@ -87,7 +86,7 @@ module.exports = grammar({
       $.raw_directive
     ),
 
-    // Raw directive with component-based structure
+    // Raw directive with simpler structure
     raw_directive: $ => seq(
       '@',
       $.directive_name,
@@ -109,11 +108,11 @@ module.exports = grammar({
 
     directive_params: $ => seq(
       '(',
-      optional($.string_content),
+      optional($.params_content),
       ')'
     ),
 
-    string_content: $ => /[^)]*/,
+    params_content: $ => /[^)]*/,
 
     if_directive: $ => seq(
       '@if',
@@ -166,6 +165,12 @@ module.exports = grammar({
     let_directive: $ => seq(
       '@let',
       $.directive_params
+    ),
+
+    directive_params: $ => seq(
+      '(',
+      optional($.expression),
+      ')'
     ),
 
     directive_content: $ => repeat1($._node),
