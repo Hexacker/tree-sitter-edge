@@ -42,5 +42,18 @@
 
     {{-- This is a comment that won't be rendered --}}
   </div>
+  <div>
+    <form method="POST" action="{{ route('integrations.integration.store', {provider}) }}">
+        {{ csrfField() }}
+        <div class="grid gap-6 mb-6 md:grid-cols-2">
+            <div>
+                @!form.input({ label: 'Integration Name', placeholder: 'Name of the integration',  name: 'name', required: true })
+                @!form.input({ label: 'Integration Identifier',placeholder: 'The unique identifier of the integration', name: 'identifier', required: true })
+
+            </div>
+        </div>
+        @!form.button({text: 'Add Integration'})
+    </form>
+  </div>
 </body>
 </html>

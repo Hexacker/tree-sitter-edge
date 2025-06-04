@@ -45,14 +45,10 @@ module.exports = grammar({
       seq(
         "@",
         optional("!"),
-        choice(
-          $.directive_component, // For @layout.dashboard, @form.input
-          $.directive_name // For simple @if, @each
-        ),
+        choice($.directive_component, $.directive_name),
         optional($.directive_params)
       ),
 
-    // Handle component.method syntax
     directive_component: ($) => seq($.directive_name, ".", $.directive_method),
 
     directive_keyword: ($) => choice("@end", "@else", "@elseif"),
@@ -60,7 +56,6 @@ module.exports = grammar({
     directive_name: ($) => /[a-zA-Z_$][a-zA-Z0-9_$]*/,
     directive_method: ($) => /[a-zA-Z_$][a-zA-Z0-9_$]*/,
 
-    // Parameter handling (keeping the working version)
     directive_params: ($) => seq("(", optional($.parameter_list), ")"),
 
     parameter_list: ($) =>
@@ -86,14 +81,24 @@ module.exports = grammar({
     param_member_expression: ($) =>
       seq($.param_identifier, repeat1(seq(".", $.param_identifier))),
 
-    param_object: ($) => seq("{", optional($.object_content), "}"),
+    param_object: ($) =>
+      seq(
+        "{",
+        optional(
+          choice(
+            $.param_identifier, // For {provider} shorthand
+            seq($.param_property, repeat(seq(",", $.param_property)))
+          )
+        ),
+        "}"
+      ),
 
-    object_content: ($) =>
-      seq($.param_property, repeat(seq(",", $.param_property))),
-
-    param_array: ($) => seq("[", optional($.array_content), "]"),
-
-    array_content: ($) => seq($.param_value, repeat(seq(",", $.param_value))),
+    param_array: ($) =>
+      seq(
+        "[",
+        optional(seq($.param_value, repeat(seq(",", $.param_value)))),
+        "]"
+      ),
 
     param_property: ($) =>
       seq(choice($.param_identifier, $.param_string), ":", $.param_value),
@@ -102,11 +107,37 @@ module.exports = grammar({
     param_string: ($) => choice(seq("'", /[^']*/, "'"), seq('"', /[^"]*/, '"')),
     param_number: ($) => /\d+(\.\d+)?/,
 
+    // SIMPLIFIED output expressions - much more robust
     output_expression: ($) =>
       choice(
-        seq("{{", optional(/[^}]*/), "}}"),
-        seq("{{{", optional(/[^}]*/), "}}}")
+        seq("{{", optional($.expression_content), "}}"),
+        seq("{{{", optional($.expression_content), "}}}")
       ),
+
+    // More robust expression parsing with better fallback
+    expression_content: ($) =>
+      choice(
+        $.expression_function_call,
+        $.expression_member,
+        $.expression_identifier,
+        $.expression_fallback // Fallback for complex expressions
+      ),
+
+    // Simplified function call handling
+    expression_function_call: ($) =>
+      seq($.expression_identifier, "(", optional($.expression_arguments), ")"),
+
+    // Simple comma-separated arguments
+    expression_arguments: ($) => /[^)]*/, // Just capture everything inside parentheses
+
+    // Member expressions like user.name, auth.user.firstName
+    expression_member: ($) =>
+      seq($.expression_identifier, repeat1(seq(".", $.expression_identifier))),
+
+    expression_identifier: ($) => /[a-zA-Z_$][a-zA-Z0-9_$]*/,
+
+    // Fallback for any complex expression that doesn't match above patterns
+    expression_fallback: ($) => /[^}]+/,
 
     comment: ($) =>
       token(
