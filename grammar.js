@@ -99,31 +99,21 @@ module.exports = grammar({
     param_string: ($) => choice(seq("'", /[^']*/, "'"), seq('"', /[^"]*/, '"')),
     param_number: ($) => /\d+(\.\d+)?/,
 
-    // COMPLETELY CLEAN output expressions - NO helper rules
+    // ONLY these expression rules - NO helper rules
     output_expression: ($) =>
       choice(
         seq("{{", optional($.expression_content), "}}"),
         seq("{{{", optional($.expression_content), "}}}")
       ),
 
-    // Only three types of expressions - nothing else
     expression_content: ($) =>
       choice($.function_call, $.member_expression, $.identifier),
 
-    // Function calls: route(), csrfField(), etc.
-    function_call: ($) =>
-      seq(
-        $.identifier,
-        "(",
-        optional(/[^)]*/), // Capture all arguments as text
-        ")"
-      ),
+    function_call: ($) => seq($.identifier, "(", optional(/[^)]*/), ")"),
 
-    // Member expressions: user.name, auth.user.firstName
     member_expression: ($) =>
       seq($.identifier, repeat1(seq(".", $.identifier))),
 
-    // Simple identifiers: title, user, provider
     identifier: ($) => /[a-zA-Z_$][a-zA-Z0-9_$]*/,
 
     comment: ($) =>
