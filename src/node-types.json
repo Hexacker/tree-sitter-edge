@@ -1,5 +1,20 @@
 [
   {
+    "type": "assignment_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "variable_name",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "attribute",
     "named": true,
     "fields": {},
@@ -46,15 +61,15 @@
     }
   },
   {
-    "type": "comparison_expression",
+    "type": "comparison_statement",
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
-          "type": "param_value",
+          "type": "param_identifier",
           "named": true
         }
       ]
@@ -215,7 +230,7 @@
           "named": true
         },
         {
-          "type": "ternary_expression",
+          "type": "ternary_expression_output",
           "named": true
         }
       ]
@@ -231,6 +246,36 @@
       "types": [
         {
           "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "function_call_param",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "helper_name",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "helper_name",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "param_identifier",
           "named": true
         }
       ]
@@ -401,19 +446,11 @@
       "required": true,
       "types": [
         {
-          "type": "comparison_expression",
-          "named": true
-        },
-        {
           "type": "each_parameter",
           "named": true
         },
         {
-          "type": "parameter_sequence",
-          "named": true
-        },
-        {
-          "type": "single_parameter",
+          "type": "simple_expression",
           "named": true
         }
       ]
@@ -457,6 +494,41 @@
         },
         {
           "type": "tag_name",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "simple_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "assignment_statement",
+          "named": true
+        },
+        {
+          "type": "comparison_statement",
+          "named": true
+        },
+        {
+          "type": "function_call_param",
+          "named": true
+        },
+        {
+          "type": "parameter_sequence",
+          "named": true
+        },
+        {
+          "type": "single_parameter",
+          "named": true
+        },
+        {
+          "type": "ternary_statement",
           "named": true
         }
       ]
@@ -552,7 +624,7 @@
     }
   },
   {
-    "type": "ternary_expression",
+    "type": "ternary_expression_output",
     "named": true,
     "fields": {},
     "children": {
@@ -573,6 +645,26 @@
         }
       ]
     }
+  },
+  {
+    "type": "ternary_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "param_identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "variable_name",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "!",
@@ -679,6 +771,10 @@
     "named": false
   },
   {
+    "type": "asset",
+    "named": false
+  },
+  {
     "type": "attribute_name",
     "named": true
   },
@@ -691,6 +787,14 @@
     "named": true
   },
   {
+    "type": "csrf",
+    "named": false
+  },
+  {
+    "type": "csrfField",
+    "named": false
+  },
+  {
     "type": "html",
     "named": false
   },
@@ -699,8 +803,16 @@
     "named": false
   },
   {
+    "type": "old",
+    "named": false
+  },
+  {
     "type": "param_number",
     "named": true
+  },
+  {
+    "type": "route",
+    "named": false
   },
   {
     "type": "tag_name",
@@ -709,6 +821,10 @@
   {
     "type": "text_content",
     "named": true
+  },
+  {
+    "type": "url",
+    "named": false
   },
   {
     "type": "{",

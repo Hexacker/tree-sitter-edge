@@ -45,7 +45,7 @@ module.exports = grammar({
         seq("'", optional(/[^']*/), "'")
       ),
 
-    // NEW: Standalone EdgeJS expressions as attributes
+    // Standalone EdgeJS expressions as attributes
     standalone_expression: ($) => $.output_expression,
 
     directive: ($) => choice($.directive_statement, $.directive_keyword),
@@ -61,28 +61,72 @@ module.exports = grammar({
     directive_name: ($) => /[a-zA-Z_$][a-zA-Z0-9_$]*/,
     directive_method: ($) => /[a-zA-Z_$][a-zA-Z0-9_$]*/,
 
-    // ENHANCED: More flexible parameter parsing
+    // SIMPLIFIED: Parse directive parameters as expressions with basic structure
     directive_params: ($) => seq("(", optional($.parameter_list), ")"),
     parameter_list: ($) =>
       choice(
-        $.single_parameter,
-        $.parameter_sequence,
-        $.each_parameter,
-        $.comparison_expression
+        $.each_parameter, // Special case: @each(item in items)
+        $.simple_expression // Everything else as simple expression
       ),
+
+    each_parameter: ($) => seq($.param_identifier, "in", $.param_value),
+
+    // SIMPLIFIED: Parse complex expressions as structured tokens
+    simple_expression: ($) =>
+      choice(
+        $.assignment_statement, // @let(var = value)
+        $.function_call_param, // function(args)
+        $.comparison_statement, // a === b, a > b
+        $.ternary_statement, // a ? b : c
+        $.parameter_sequence, // a, b, c
+        $.single_parameter // simple value
+      ),
+
+    // Handle @let(variable = value)
+    assignment_statement: ($) =>
+      seq(
+        $.variable_name,
+        "=",
+        /[^)]*/ // Capture everything until closing paren
+      ),
+
+    // Handle function calls in parameters
+    function_call_param: ($) => seq($.helper_name, "(", optional(/[^)]*/), ")"),
+
+    // Handle comparisons like type === 'password'
+    comparison_statement: ($) =>
+      seq(
+        $.param_identifier,
+        choice("===", "==", "!==", "!=", ">", "<", ">=", "<="),
+        /[^)]*/ // Rest of expression
+      ),
+
+    // Handle ternary expressions
+    ternary_statement: ($) =>
+      seq(
+        $.param_identifier,
+        "?",
+        /[^)]*/ // Rest of ternary
+      ),
+
+    // Variable names (for assignments)
+    variable_name: ($) => /[a-zA-Z_$][a-zA-Z0-9_$]*/,
+
+    // Helper function names
+    helper_name: ($) =>
+      choice(
+        "old",
+        "route",
+        "url",
+        "asset",
+        "csrf",
+        "csrfField",
+        $.param_identifier
+      ),
+
     single_parameter: ($) => $.param_value,
     parameter_sequence: ($) =>
       seq($.param_value, repeat1(seq(",", $.param_value))),
-    each_parameter: ($) => seq($.param_identifier, "in", $.param_value),
-
-    // NEW: Handle comparison expressions like (type === 'password')
-    comparison_expression: ($) =>
-      seq(
-        $.param_value,
-        choice("===", "==", "!=", "!==", "<", ">", "<=", ">="),
-        $.param_value
-      ),
-
     param_value: ($) =>
       choice(
         $.param_member_expression,
@@ -110,7 +154,7 @@ module.exports = grammar({
     param_string: ($) => choice(seq("'", /[^']*/, "'"), seq('"', /[^"]*/, '"')),
     param_number: ($) => /\d+(\.\d+)?/,
 
-    // ENHANCED: Better expression parsing for complex JavaScript
+    // Enhanced expression parsing for {{ }} expressions
     output_expression: ($) =>
       choice(
         seq("{{", optional($.expression_content), "}}"),
@@ -118,15 +162,15 @@ module.exports = grammar({
       ),
     expression_content: ($) =>
       choice(
-        prec(3, $.ternary_expression), // Highest precedence for ternary
-        prec(2, $.binary_expression), // Binary operators like ||
-        prec(1, $.function_call), // Function calls
-        $.member_expression, // Member access
-        $.identifier // Simple identifiers
+        prec(3, $.ternary_expression_output),
+        prec(2, $.binary_expression),
+        prec(1, $.function_call),
+        $.member_expression,
+        $.identifier
       ),
 
-    // NEW: Ternary expressions (condition ? true : false)
-    ternary_expression: ($) =>
+    // Ternary expressions in output (condition ? true : false)
+    ternary_expression_output: ($) =>
       seq(
         choice($.identifier, $.member_expression),
         "?",
@@ -135,7 +179,7 @@ module.exports = grammar({
         choice($.param_string, $.identifier, $.member_expression)
       ),
 
-    // NEW: Binary expressions (a || b)
+    // Binary expressions (a || b)
     binary_expression: ($) =>
       seq(
         choice($.identifier, $.member_expression),
