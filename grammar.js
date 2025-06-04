@@ -10,16 +10,14 @@ module.exports = grammar({
       choice(
         $.comment,
         $.doctype,
-        $.html_tag, // Treat all HTML tags independently
+        $.html_tag,
         $.directive,
         $.output_expression,
         $.text_content
       ),
 
-    // Remove element structure entirely - treat tags independently
     html_tag: ($) => choice($.start_tag, $.end_tag, $.self_closing_tag),
 
-    // Individual tag types
     start_tag: ($) => seq("<", $.tag_name, repeat($.attribute), ">"),
     end_tag: ($) => seq("</", $.tag_name, ">"),
     self_closing_tag: ($) => seq("<", $.tag_name, repeat($.attribute), "/>"),
@@ -41,16 +39,66 @@ module.exports = grammar({
         seq("'", optional(/[^']*/), "'")
       ),
 
-    // EdgeJS directives
     directive: ($) => choice($.directive_statement, $.directive_keyword),
 
     directive_statement: ($) =>
-      seq("@", $.directive_name, optional($.directive_params)),
+      seq("@", optional("!"), $.directive_name, optional($.directive_params)),
 
     directive_keyword: ($) => choice("@end", "@else", "@elseif"),
 
     directive_name: ($) => /[a-zA-Z_$][a-zA-Z0-9_$\.]*/,
-    directive_params: ($) => seq("(", optional(/[^)]*/), ")"),
+
+    // Simplified parameter handling - no recursive comma sequences
+    directive_params: ($) => seq("(", optional($.parameter_list), ")"),
+
+    // Handle parameter lists explicitly
+    parameter_list: ($) =>
+      choice(
+        $.single_parameter,
+        $.parameter_sequence,
+        $.each_parameter // Special case for @each(item in items)
+      ),
+
+    // Single parameter (most common case)
+    single_parameter: ($) => $.param_value,
+
+    // Multiple comma-separated parameters
+    parameter_sequence: ($) =>
+      seq($.param_value, repeat1(seq(",", $.param_value))),
+
+    // Special handling for @each(item in items)
+    each_parameter: ($) => seq($.param_identifier, "in", $.param_value),
+
+    // Individual parameter values
+    param_value: ($) =>
+      choice(
+        $.param_member_expression,
+        $.param_object,
+        $.param_array,
+        $.param_string,
+        $.param_number,
+        $.param_identifier
+      ),
+
+    // Handle dot notation like user.isAdmin
+    param_member_expression: ($) =>
+      seq($.param_identifier, repeat1(seq(".", $.param_identifier))),
+
+    param_object: ($) => seq("{", optional($.object_content), "}"),
+
+    object_content: ($) =>
+      seq($.param_property, repeat(seq(",", $.param_property))),
+
+    param_array: ($) => seq("[", optional($.array_content), "]"),
+
+    array_content: ($) => seq($.param_value, repeat(seq(",", $.param_value))),
+
+    param_property: ($) =>
+      seq(choice($.param_identifier, $.param_string), ":", $.param_value),
+
+    param_identifier: ($) => /[a-zA-Z_$][a-zA-Z0-9_$]*/,
+    param_string: ($) => choice(seq("'", /[^']*/, "'"), seq('"', /[^"]*/, '"')),
+    param_number: ($) => /\d+(\.\d+)?/,
 
     output_expression: ($) =>
       choice(
@@ -60,20 +108,7 @@ module.exports = grammar({
 
     comment: ($) =>
       token(
-        prec(
-          4,
-          seq(
-            "{{--",
-            repeat(
-              choice(
-                /[^-]+/, // Any non-dash characters
-                /-[^-]/, // Single dash not followed by another dash
-                /--[^}]/ // Double dash not followed by }
-              )
-            ),
-            "--}}"
-          )
-        )
+        prec(4, seq("{{--", repeat(choice(/[^-]+/, /-[^-]/, /--[^}]/)), "--}}"))
       ),
 
     text_content: ($) => token(prec(-1, /[^<@{]+/)),
