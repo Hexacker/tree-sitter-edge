@@ -57,7 +57,36 @@
     }
   },
   {
+    "type": "directive_component",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "directive_method",
+          "named": true
+        },
+        {
+          "type": "directive_name",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "directive_keyword",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "directive_method",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "directive_name",
     "named": true,
     "fields": {}
   },
@@ -84,6 +113,10 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "directive_component",
+          "named": true
+        },
         {
           "type": "directive_name",
           "named": true
@@ -191,6 +224,11 @@
         }
       ]
     }
+  },
+  {
+    "type": "param_identifier",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "param_member_expression",
@@ -510,20 +548,12 @@
     "named": true
   },
   {
-    "type": "directive_name",
-    "named": true
-  },
-  {
     "type": "html",
     "named": false
   },
   {
     "type": "in",
     "named": false
-  },
-  {
-    "type": "param_identifier",
-    "named": true
   },
   {
     "type": "param_number",

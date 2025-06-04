@@ -42,34 +42,37 @@ module.exports = grammar({
     directive: ($) => choice($.directive_statement, $.directive_keyword),
 
     directive_statement: ($) =>
-      seq("@", optional("!"), $.directive_name, optional($.directive_params)),
+      seq(
+        "@",
+        optional("!"),
+        choice(
+          $.directive_component, // For @layout.dashboard, @form.input
+          $.directive_name // For simple @if, @each
+        ),
+        optional($.directive_params)
+      ),
+
+    // Handle component.method syntax
+    directive_component: ($) => seq($.directive_name, ".", $.directive_method),
 
     directive_keyword: ($) => choice("@end", "@else", "@elseif"),
 
-    directive_name: ($) => /[a-zA-Z_$][a-zA-Z0-9_$\.]*/,
+    directive_name: ($) => /[a-zA-Z_$][a-zA-Z0-9_$]*/,
+    directive_method: ($) => /[a-zA-Z_$][a-zA-Z0-9_$]*/,
 
-    // Simplified parameter handling - no recursive comma sequences
+    // Parameter handling (keeping the working version)
     directive_params: ($) => seq("(", optional($.parameter_list), ")"),
 
-    // Handle parameter lists explicitly
     parameter_list: ($) =>
-      choice(
-        $.single_parameter,
-        $.parameter_sequence,
-        $.each_parameter // Special case for @each(item in items)
-      ),
+      choice($.single_parameter, $.parameter_sequence, $.each_parameter),
 
-    // Single parameter (most common case)
     single_parameter: ($) => $.param_value,
 
-    // Multiple comma-separated parameters
     parameter_sequence: ($) =>
       seq($.param_value, repeat1(seq(",", $.param_value))),
 
-    // Special handling for @each(item in items)
     each_parameter: ($) => seq($.param_identifier, "in", $.param_value),
 
-    // Individual parameter values
     param_value: ($) =>
       choice(
         $.param_member_expression,
@@ -80,7 +83,6 @@ module.exports = grammar({
         $.param_identifier
       ),
 
-    // Handle dot notation like user.isAdmin
     param_member_expression: ($) =>
       seq($.param_identifier, repeat1(seq(".", $.param_identifier))),
 
