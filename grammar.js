@@ -107,37 +107,36 @@ module.exports = grammar({
     param_string: ($) => choice(seq("'", /[^']*/, "'"), seq('"', /[^"]*/, '"')),
     param_number: ($) => /\d+(\.\d+)?/,
 
-    // SIMPLIFIED output expressions - much more robust
+    // Simplified output expressions
     output_expression: ($) =>
       choice(
         seq("{{", optional($.expression_content), "}}"),
         seq("{{{", optional($.expression_content), "}}}")
       ),
 
-    // More robust expression parsing with better fallback
+    // Expression content - keep it simple but functional
     expression_content: ($) =>
       choice(
         $.expression_function_call,
         $.expression_member,
-        $.expression_identifier,
-        $.expression_fallback // Fallback for complex expressions
+        $.expression_identifier
       ),
 
-    // Simplified function call handling
+    // Function calls like route(), csrfField()
     expression_function_call: ($) =>
-      seq($.expression_identifier, "(", optional($.expression_arguments), ")"),
-
-    // Simple comma-separated arguments
-    expression_arguments: ($) => /[^)]*/, // Just capture everything inside parentheses
+      seq(
+        $.expression_identifier,
+        "(",
+        optional(/[^)]*/), // Simple argument capture
+        ")"
+      ),
 
     // Member expressions like user.name, auth.user.firstName
     expression_member: ($) =>
       seq($.expression_identifier, repeat1(seq(".", $.expression_identifier))),
 
+    // Simple identifiers
     expression_identifier: ($) => /[a-zA-Z_$][a-zA-Z0-9_$]*/,
-
-    // Fallback for any complex expression that doesn't match above patterns
-    expression_fallback: ($) => /[^}]+/,
 
     comment: ($) =>
       token(

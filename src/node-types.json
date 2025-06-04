@@ -161,10 +161,6 @@
       "required": true,
       "types": [
         {
-          "type": "expression_fallback",
-          "named": true
-        },
-        {
           "type": "expression_function_call",
           "named": true
         },
@@ -184,13 +180,9 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
-        {
-          "type": "expression_arguments",
-          "named": true
-        },
         {
           "type": "expression_identifier",
           "named": true
@@ -595,14 +587,6 @@
   },
   {
     "type": "comment",
-    "named": true
-  },
-  {
-    "type": "expression_arguments",
-    "named": true
-  },
-  {
-    "type": "expression_fallback",
     "named": true
   },
   {

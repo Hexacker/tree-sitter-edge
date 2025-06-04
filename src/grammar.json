@@ -733,10 +733,6 @@
         {
           "type": "SYMBOL",
           "name": "expression_identifier"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "expression_fallback"
         }
       ]
     },
@@ -755,8 +751,8 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "SYMBOL",
-              "name": "expression_arguments"
+              "type": "PATTERN",
+              "value": "[^)]*"
             },
             {
               "type": "BLANK"
@@ -768,10 +764,6 @@
           "value": ")"
         }
       ]
-    },
-    "expression_arguments": {
-      "type": "PATTERN",
-      "value": "[^)]*"
     },
     "expression_member": {
       "type": "SEQ",
@@ -801,10 +793,6 @@
     "expression_identifier": {
       "type": "PATTERN",
       "value": "[a-zA-Z_$][a-zA-Z0-9_$]*"
-    },
-    "expression_fallback": {
-      "type": "PATTERN",
-      "value": "[^}]+"
     },
     "comment": {
       "type": "TOKEN",
