@@ -99,7 +99,6 @@ module.exports = grammar({
     param_string: ($) => choice(seq("'", /[^']*/, "'"), seq('"', /[^"]*/, '"')),
     param_number: ($) => /\d+(\.\d+)?/,
 
-    // ONLY these expression rules - NO helper rules
     output_expression: ($) =>
       choice(
         seq("{{", optional($.expression_content), "}}"),
