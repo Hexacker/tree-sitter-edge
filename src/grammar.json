@@ -167,7 +167,7 @@
                   "members": [
                     {
                       "type": "SYMBOL",
-                      "name": "quoted_attribute_value"
+                      "name": "mixed_attribute_value"
                     },
                     {
                       "type": "SYMBOL",
@@ -192,7 +192,7 @@
       "type": "PATTERN",
       "value": "[^\\s\"'=<>`]+"
     },
-    "quoted_attribute_value": {
+    "mixed_attribute_value": {
       "type": "CHOICE",
       "members": [
         {
@@ -203,16 +203,20 @@
               "value": "\""
             },
             {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "PATTERN",
-                  "value": "[^\"]*"
-                },
-                {
-                  "type": "BLANK"
-                }
-              ]
+              "type": "REPEAT",
+              "content": {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "SYMBOL",
+                    "name": "output_expression"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "attribute_text"
+                  }
+                ]
+              }
             },
             {
               "type": "STRING",
@@ -228,16 +232,20 @@
               "value": "'"
             },
             {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "PATTERN",
-                  "value": "[^']*"
-                },
-                {
-                  "type": "BLANK"
-                }
-              ]
+              "type": "REPEAT",
+              "content": {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "SYMBOL",
+                    "name": "output_expression"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "attribute_text"
+                  }
+                ]
+              }
             },
             {
               "type": "STRING",
@@ -246,6 +254,17 @@
           ]
         }
       ]
+    },
+    "attribute_text": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": -1,
+        "content": {
+          "type": "PATTERN",
+          "value": "[^\"'{}]+"
+        }
+      }
     },
     "directive": {
       "type": "CHOICE",

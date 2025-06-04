@@ -16,7 +16,7 @@
           "named": true
         },
         {
-          "type": "quoted_attribute_value",
+          "type": "mixed_attribute_value",
           "named": true
         }
       ]
@@ -234,6 +234,25 @@
     }
   },
   {
+    "type": "mixed_attribute_value",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "attribute_text",
+          "named": true
+        },
+        {
+          "type": "output_expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "output_expression",
     "named": true,
     "fields": {},
@@ -383,11 +402,6 @@
         }
       ]
     }
-  },
-  {
-    "type": "quoted_attribute_value",
-    "named": true,
-    "fields": {}
   },
   {
     "type": "self_closing_tag",
@@ -552,6 +566,10 @@
   },
   {
     "type": "attribute_name",
+    "named": true
+  },
+  {
+    "type": "attribute_text",
     "named": true
   },
   {

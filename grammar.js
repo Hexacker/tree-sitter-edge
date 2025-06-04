@@ -18,18 +18,25 @@ module.exports = grammar({
     self_closing_tag: ($) => seq("<", $.tag_name, repeat($.attribute), "/>"),
     doctype: ($) => seq("<!DOCTYPE", /\s+/, "html", ">"),
     tag_name: ($) => /[a-zA-Z][a-zA-Z0-9_\-:]*/,
+
     attribute: ($) =>
       seq(
         $.attribute_name,
-        optional(seq("=", choice($.quoted_attribute_value, $.attribute_value)))
+        optional(seq("=", choice($.mixed_attribute_value, $.attribute_value)))
       ),
     attribute_name: ($) => /[a-zA-Z_:][a-zA-Z0-9_:\-\.]*/,
     attribute_value: ($) => /[^\s"'=<>`]+/,
-    quoted_attribute_value: ($) =>
+
+    // FIXED: Simpler approach for mixed content in attributes
+    mixed_attribute_value: ($) =>
       choice(
-        seq('"', optional(/[^"]*/), '"'),
-        seq("'", optional(/[^']*/), "'")
+        seq('"', repeat(choice($.output_expression, $.attribute_text)), '"'),
+        seq("'", repeat(choice($.output_expression, $.attribute_text)), "'")
       ),
+
+    // Simple text content inside attributes - just match non-brace characters
+    attribute_text: ($) => token(prec(-1, /[^"'{}]+/)),
+
     directive: ($) => choice($.directive_statement, $.directive_keyword),
     directive_statement: ($) =>
       seq(
