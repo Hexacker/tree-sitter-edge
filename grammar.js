@@ -140,8 +140,8 @@ module.exports = grammar({
 
     comment: ($) =>
       choice(
-        token(seq("{{--", repeat(choice(/[^-]/, /-[^-]/, /--[^}]/)), "--}}")),
-        token(seq("<!--", repeat(choice(/[^-]/, /-[^-]/, /--[^>]/)), "-->"))
+        token(prec(1, /\{\{--[\s\S]*?--\}\}/)), // EdgeJS comments
+        token(prec(1, /<!--[\s\S]*?-->/)) // HTML comments
       ),
 
     raw_text: ($) => /[^<@{]+/,
