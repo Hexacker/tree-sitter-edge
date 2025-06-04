@@ -72,7 +72,6 @@ module.exports = grammar({
       choice(
         $.param_member_expression,
         $.param_object,
-        $.param_array,
         $.param_string,
         $.param_number,
         $.param_identifier
@@ -93,13 +92,6 @@ module.exports = grammar({
         "}"
       ),
 
-    param_array: ($) =>
-      seq(
-        "[",
-        optional(seq($.param_value, repeat(seq(",", $.param_value)))),
-        "]"
-      ),
-
     param_property: ($) =>
       seq(choice($.param_identifier, $.param_string), ":", $.param_value),
 
@@ -107,36 +99,32 @@ module.exports = grammar({
     param_string: ($) => choice(seq("'", /[^']*/, "'"), seq('"', /[^"]*/, '"')),
     param_number: ($) => /\d+(\.\d+)?/,
 
-    // Simplified output expressions
+    // SIMPLIFIED output expressions - no conflicts
     output_expression: ($) =>
       choice(
         seq("{{", optional($.expression_content), "}}"),
         seq("{{{", optional($.expression_content), "}}}")
       ),
 
-    // Expression content - keep it simple but functional
+    // Single consistent expression parsing
     expression_content: ($) =>
-      choice(
-        $.expression_function_call,
-        $.expression_member,
-        $.expression_identifier
-      ),
+      choice($.function_call, $.member_expression, $.identifier),
 
     // Function calls like route(), csrfField()
-    expression_function_call: ($) =>
+    function_call: ($) =>
       seq(
-        $.expression_identifier,
+        $.identifier,
         "(",
         optional(/[^)]*/), // Simple argument capture
         ")"
       ),
 
     // Member expressions like user.name, auth.user.firstName
-    expression_member: ($) =>
-      seq($.expression_identifier, repeat1(seq(".", $.expression_identifier))),
+    member_expression: ($) =>
+      seq($.identifier, repeat1(seq(".", $.identifier))),
 
     // Simple identifiers
-    expression_identifier: ($) => /[a-zA-Z_$][a-zA-Z0-9_$]*/,
+    identifier: ($) => /[a-zA-Z_$][a-zA-Z0-9_$]*/,
 
     comment: ($) =>
       token(

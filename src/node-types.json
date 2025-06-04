@@ -161,22 +161,22 @@
       "required": true,
       "types": [
         {
-          "type": "expression_function_call",
+          "type": "function_call",
           "named": true
         },
         {
-          "type": "expression_identifier",
+          "type": "identifier",
           "named": true
         },
         {
-          "type": "expression_member",
+          "type": "member_expression",
           "named": true
         }
       ]
     }
   },
   {
-    "type": "expression_function_call",
+    "type": "function_call",
     "named": true,
     "fields": {},
     "children": {
@@ -184,27 +184,7 @@
       "required": true,
       "types": [
         {
-          "type": "expression_identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "expression_identifier",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "expression_member",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "expression_identifier",
+          "type": "identifier",
           "named": true
         }
       ]
@@ -234,6 +214,26 @@
     }
   },
   {
+    "type": "identifier",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "member_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "output_expression",
     "named": true,
     "fields": {},
@@ -243,21 +243,6 @@
       "types": [
         {
           "type": "expression_content",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "param_array",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "param_value",
           "named": true
         }
       ]
@@ -338,10 +323,6 @@
       "multiple": false,
       "required": true,
       "types": [
-        {
-          "type": "param_array",
-          "named": true
-        },
         {
           "type": "param_identifier",
           "named": true
@@ -567,14 +548,6 @@
   },
   {
     "type": "@end",
-    "named": false
-  },
-  {
-    "type": "[",
-    "named": false
-  },
-  {
-    "type": "]",
     "named": false
   },
   {
