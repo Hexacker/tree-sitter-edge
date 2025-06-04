@@ -14,6 +14,10 @@
       "members": [
         {
           "type": "SYMBOL",
+          "name": "comment"
+        },
+        {
+          "type": "SYMBOL",
           "name": "doctype"
         },
         {
@@ -27,10 +31,6 @@
         {
           "type": "SYMBOL",
           "name": "output_expression"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "comment"
         },
         {
           "type": "SYMBOL",
@@ -752,57 +752,99 @@
       "value": "\\d+(\\.\\d+)?"
     },
     "comment": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "SEQ",
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 3,
+        "content": {
+          "type": "CHOICE",
           "members": [
             {
-              "type": "STRING",
-              "value": "{{--"
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "{{--"
+                },
+                {
+                  "type": "REPEAT",
+                  "content": {
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "PATTERN",
+                        "value": "[^-]"
+                      },
+                      {
+                        "type": "PATTERN",
+                        "value": "-[^-]"
+                      },
+                      {
+                        "type": "PATTERN",
+                        "value": "--[^}]"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "STRING",
+                  "value": "--}}"
+                }
+              ]
             },
             {
-              "type": "PATTERN",
-              "value": "[^-]*(-[^-}])*"
-            },
-            {
-              "type": "STRING",
-              "value": "--}}"
-            }
-          ]
-        },
-        {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "<!--"
-            },
-            {
-              "type": "PATTERN",
-              "value": "[^-]*(-[^-])*"
-            },
-            {
-              "type": "STRING",
-              "value": "-->"
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "<!--"
+                },
+                {
+                  "type": "REPEAT",
+                  "content": {
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "PATTERN",
+                        "value": "[^-]"
+                      },
+                      {
+                        "type": "PATTERN",
+                        "value": "-[^-]"
+                      },
+                      {
+                        "type": "PATTERN",
+                        "value": "--[^>]"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "STRING",
+                  "value": "-->"
+                }
+              ]
             }
           ]
         }
-      ]
+      }
     },
     "raw_text": {
-      "type": "PATTERN",
-      "value": "[^<@{]+"
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": -1,
+        "content": {
+          "type": "PATTERN",
+          "value": "[^<@{}\\s]+"
+        }
+      }
     }
   },
   "extras": [
     {
       "type": "PATTERN",
       "value": "\\s"
-    },
-    {
-      "type": "SYMBOL",
-      "name": "comment"
     }
   ],
   "conflicts": [],

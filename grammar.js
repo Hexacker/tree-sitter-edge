@@ -1,18 +1,18 @@
 module.exports = grammar({
   name: "edge",
 
-  extras: ($) => [/\s/, $.comment],
+  extras: ($) => [/\s/],
 
   rules: {
     source_file: ($) => repeat($._node),
 
     _node: ($) =>
       choice(
+        $.comment, // Handle comments first with higher priority
         $.doctype,
         $.element,
         $.directive,
         $.output_expression,
-        $.comment,
         $.raw_text
       ),
 
@@ -138,12 +138,19 @@ module.exports = grammar({
     string: ($) => choice(seq("'", /[^']*/, "'"), seq('"', /[^"]*/, '"')),
     number: ($) => /\d+(\.\d+)?/,
 
+    // Enhanced comment rule with proper precedence
     comment: ($) =>
-      choice(
-        token(prec(1, /\{\{--[\s\S]*?--\}\}/)), // EdgeJS comments
-        token(prec(1, /<!--[\s\S]*?-->/)) // HTML comments
+      token(
+        prec(
+          3,
+          choice(
+            seq("{{--", repeat(choice(/[^-]/, /-[^-]/, /--[^}]/)), "--}}"),
+            seq("<!--", repeat(choice(/[^-]/, /-[^-]/, /--[^>]/)), "-->")
+          )
+        )
       ),
 
-    raw_text: ($) => /[^<@{]+/,
+    // Fixed raw_text rule - removed unsupported lookahead
+    raw_text: ($) => token(prec(-1, /[^<@{}\s]+/)),
   },
 });
