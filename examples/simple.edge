@@ -22,8 +22,13 @@
                             >
       <span class="sr-only">Open user menu</span> --}}
 
-
-      {{-- <button class="test" --}}
+                        <span class="">{{ auth.user.firstName }}</span>
+                        <img
+                            class="w-8 h-8 rounded-full"
+                            src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
+                            alt="user photo"
+                        />
+      {{-- </button> --}}
 
       <ul>
         @each(item in items)

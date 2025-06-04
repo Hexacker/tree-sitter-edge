@@ -58,7 +58,23 @@ module.exports = grammar({
         seq("{{{", optional(/[^}]*/), "}}}")
       ),
 
-    comment: ($) => token(prec(4, /\{\{--[\s\S]*?--\}\}/)),
+    comment: ($) =>
+      token(
+        prec(
+          4,
+          seq(
+            "{{--",
+            repeat(
+              choice(
+                /[^-]+/, // Any non-dash characters
+                /-[^-]/, // Single dash not followed by another dash
+                /--[^}]/ // Double dash not followed by }
+              )
+            ),
+            "--}}"
+          )
+        )
+      ),
 
     text_content: ($) => token(prec(-1, /[^<@{]+/)),
   },
