@@ -31,19 +31,24 @@ module.exports = grammar({
     doctype: ($) => seq("<!DOCTYPE", /\s+/, "html", ">"),
     tag_name: ($) => /[a-zA-Z][a-zA-Z0-9_\-:]*/,
 
-    // Regular attributes
+    // Regular attributes with mixed content support
     attribute: ($) =>
       seq(
         $.attribute_name,
-        optional(seq("=", choice($.quoted_attribute_value, $.attribute_value)))
+        optional(seq("=", choice($.mixed_attribute_value, $.attribute_value)))
       ),
     attribute_name: ($) => /[a-zA-Z_:][a-zA-Z0-9_:\-\.]*/,
     attribute_value: ($) => /[^\s"'=<>`]+/,
-    quoted_attribute_value: ($) =>
+
+    // Handle EdgeJS expressions inside quoted attributes
+    mixed_attribute_value: ($) =>
       choice(
-        seq('"', optional(/[^"]*/), '"'),
-        seq("'", optional(/[^']*/), "'")
+        seq('"', repeat(choice($.output_expression, $.attribute_text)), '"'),
+        seq("'", repeat(choice($.output_expression, $.attribute_text)), "'")
       ),
+
+    // Text content inside attributes (not EdgeJS expressions)
+    attribute_text: ($) => token(prec(-1, /[^"'{}]+/)),
 
     // Standalone EdgeJS expressions as attributes
     standalone_expression: ($) => $.output_expression,
@@ -57,76 +62,28 @@ module.exports = grammar({
         optional($.directive_params)
       ),
     directive_component: ($) => seq($.directive_name, ".", $.directive_method),
-    directive_keyword: ($) => choice("@end", "@else", "@elseif"),
+
+    // Parse @end, @else as @ + keyword (consistent with @if)
+    directive_keyword: ($) => seq("@", choice("end", "else", "elseif")),
+
     directive_name: ($) => /[a-zA-Z_$][a-zA-Z0-9_$]*/,
     directive_method: ($) => /[a-zA-Z_$][a-zA-Z0-9_$]*/,
 
-    // SIMPLIFIED: Parse directive parameters as expressions with basic structure
+    // FIXED: Simplified directive parameter parsing to avoid conflicts
     directive_params: ($) => seq("(", optional($.parameter_list), ")"),
-    parameter_list: ($) =>
-      choice(
-        $.each_parameter, // Special case: @each(item in items)
-        $.simple_expression // Everything else as simple expression
-      ),
+    parameter_list: ($) => $.complex_parameter, // SIMPLIFIED - no choices that conflict
 
-    each_parameter: ($) => seq($.param_identifier, "in", $.param_value),
+    // FIXED: More specific each_parameter matching - only matches when "in" is present
+    // each_parameter: ($) =>
+    //   seq(
+    //     $.param_identifier,
+    //     token(prec(10, "in")), // Higher precedence and more specific - only match if "in" is actually there
+    //     $.param_value
+    //   ),
 
-    // SIMPLIFIED: Parse complex expressions as structured tokens
-    simple_expression: ($) =>
-      choice(
-        $.assignment_statement, // @let(var = value)
-        $.function_call_param, // function(args)
-        $.comparison_statement, // a === b, a > b
-        $.ternary_statement, // a ? b : c
-        $.parameter_sequence, // a, b, c
-        $.single_parameter // simple value
-      ),
+    // Simple regex capture for everything else
+    complex_parameter: ($) => /[^)]*/,
 
-    // Handle @let(variable = value)
-    assignment_statement: ($) =>
-      seq(
-        $.variable_name,
-        "=",
-        /[^)]*/ // Capture everything until closing paren
-      ),
-
-    // Handle function calls in parameters
-    function_call_param: ($) => seq($.helper_name, "(", optional(/[^)]*/), ")"),
-
-    // Handle comparisons like type === 'password'
-    comparison_statement: ($) =>
-      seq(
-        $.param_identifier,
-        choice("===", "==", "!==", "!=", ">", "<", ">=", "<="),
-        /[^)]*/ // Rest of expression
-      ),
-
-    // Handle ternary expressions
-    ternary_statement: ($) =>
-      seq(
-        $.param_identifier,
-        "?",
-        /[^)]*/ // Rest of ternary
-      ),
-
-    // Variable names (for assignments)
-    variable_name: ($) => /[a-zA-Z_$][a-zA-Z0-9_$]*/,
-
-    // Helper function names
-    helper_name: ($) =>
-      choice(
-        "old",
-        "route",
-        "url",
-        "asset",
-        "csrf",
-        "csrfField",
-        $.param_identifier
-      ),
-
-    single_parameter: ($) => $.param_value,
-    parameter_sequence: ($) =>
-      seq($.param_value, repeat1(seq(",", $.param_value))),
     param_value: ($) =>
       choice(
         $.param_member_expression,
@@ -162,15 +119,14 @@ module.exports = grammar({
       ),
     expression_content: ($) =>
       choice(
-        prec(3, $.ternary_expression_output),
+        prec(3, $.ternary_expression),
         prec(2, $.binary_expression),
         prec(1, $.function_call),
         $.member_expression,
         $.identifier
       ),
 
-    // Ternary expressions in output (condition ? true : false)
-    ternary_expression_output: ($) =>
+    ternary_expression: ($) =>
       seq(
         choice($.identifier, $.member_expression),
         "?",
@@ -179,7 +135,6 @@ module.exports = grammar({
         choice($.param_string, $.identifier, $.member_expression)
       ),
 
-    // Binary expressions (a || b)
     binary_expression: ($) =>
       seq(
         choice($.identifier, $.member_expression),
