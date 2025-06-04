@@ -105,10 +105,32 @@ module.exports = grammar({
         seq("{{{", optional($.expression_content), "}}}")
       ),
 
+    // FIXED: Function calls get HIGHER precedence than member expressions
     expression_content: ($) =>
-      choice($.function_call, $.member_expression, $.identifier),
+      choice(
+        prec(2, $.function_call), // Higher precedence
+        prec(1, $.member_expression), // Lower precedence
+        $.identifier
+      ),
 
-    function_call: ($) => seq($.identifier, "(", optional(/[^)]*/), ")"),
+    // FIXED: Better function call parsing with proper argument handling
+    function_call: ($) =>
+      seq($.identifier, "(", optional($.function_arguments), ")"),
+
+    // FIXED: Handle function arguments more precisely
+    function_arguments: ($) =>
+      choice(
+        seq($.argument_value, repeat(seq(",", $.argument_value))),
+        /[^)]*/ // Fallback for complex arguments
+      ),
+
+    argument_value: ($) =>
+      choice($.string_literal, $.object_literal, $.identifier),
+
+    string_literal: ($) =>
+      choice(seq("'", /[^']*/, "'"), seq('"', /[^"]*/, '"')),
+
+    object_literal: ($) => seq("{", /[^}]*/, "}"),
 
     member_expression: ($) =>
       seq($.identifier, repeat1(seq(".", $.identifier))),

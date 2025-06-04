@@ -1,5 +1,28 @@
 [
   {
+    "type": "argument_value",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "object_literal",
+          "named": true
+        },
+        {
+          "type": "string_literal",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "attribute",
     "named": true,
     "fields": {},
@@ -176,13 +199,32 @@
     }
   },
   {
+    "type": "function_arguments",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "argument_value",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "function_call",
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "function_arguments",
+          "named": true
+        },
         {
           "type": "identifier",
           "named": true
@@ -232,6 +274,11 @@
         }
       ]
     }
+  },
+  {
+    "type": "object_literal",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "output_expression",
@@ -477,6 +524,11 @@
         }
       ]
     }
+  },
+  {
+    "type": "string_literal",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "!",
