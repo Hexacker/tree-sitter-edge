@@ -6,15 +6,13 @@
       "camelcase": "Edge",
       "title": "Edge",
       "scope": "source.edge",
-      "file-types": [
-        "edge"
-      ],
+      "file-types": ["edge"],
       "injection-regex": "^edge$",
       "class-name": "TreeSitterEdge"
     }
   ],
   "metadata": {
-    "version": "0.1.0",
+    "version": "0.2.0",
     "license": "MIT",
     "description": "Edge grammar for tree-sitter",
     "authors": [
@@ -28,7 +26,7 @@
       "repository": "https://github.com/Hexacker/tree-sitter-edge"
     }
   },
-  "parser-directories" : ["/Users/hexacker/Desktop/Work/zed/tree-sitter-edge"],
+  "parser-directories": ["/Users/hexacker/Desktop/Work/zed/tree-sitter-edge"],
   "bindings": {
     "c": true,
     "go": true,

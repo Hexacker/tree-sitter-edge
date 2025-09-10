@@ -1,6 +1,6 @@
 # Rust artifacts
 target/
-
+logs
 # Node artifacts
 build/
 prebuilds/
