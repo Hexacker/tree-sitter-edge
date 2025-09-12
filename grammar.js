@@ -12,7 +12,7 @@ module.exports = grammar({
         $.output_expression,
         $.text_content
       ),
-    html_tag: ($) => choice($.start_tag, $.end_tag, $.self_closing_tag),
+    html_tag: ($) => choice($.start_tag, $.end_tag, $.self_closing_tag, $.style_element, $.script_element),
     start_tag: ($) =>
       seq(
         "<",
@@ -28,6 +28,39 @@ module.exports = grammar({
         repeat(choice($.attribute, $.standalone_expression)),
         "/>"
       ),
+      
+    // Special handling for style tags to properly parse CSS content
+    style_element: ($) =>
+      seq(
+        "<",
+        alias("style", $.tag_name),
+        repeat(choice($.attribute, $.standalone_expression)),
+        ">",
+        optional($.css_content),
+        "</",
+        alias("style", $.tag_name),
+        ">"
+      ),
+      
+    // Special handling for script tags to properly parse JavaScript content
+    script_element: ($) =>
+      seq(
+        "<",
+        alias("script", $.tag_name),
+        repeat(choice($.attribute, $.standalone_expression)),
+        ">",
+        optional($.js_content),
+        "</",
+        alias("script", $.tag_name),
+        ">"
+      ),
+      
+    // CSS content inside style tags
+    css_content: ($) => token(prec(-2, /[^<]+/)),
+    
+    // JavaScript content inside script tags
+    js_content: ($) => token(prec(-2, /[^<]+/)),
+    
     doctype: ($) => seq("<!DOCTYPE", /\s+/, "html", ">"),
     tag_name: ($) => /[a-zA-Z][a-zA-Z0-9_\-:]*/,
 
@@ -38,17 +71,17 @@ module.exports = grammar({
         optional(seq("=", choice($.mixed_attribute_value, $.attribute_value)))
       ),
     attribute_name: ($) => /[a-zA-Z_:][a-zA-Z0-9_:\-\.]*/,
-    attribute_value: ($) => /[^\s"'=<>`]+/,
+    attribute_value: ($) => /[^\\s"'=<>`]+/,
+
+    // Text content inside attributes (not EdgeJS expressions)
+    attribute_text: ($) => token(prec(-1, /[^"'{}]+/)),
 
     // Handle EdgeJS expressions inside quoted attributes
     mixed_attribute_value: ($) =>
       choice(
-        seq('"', repeat(choice($.output_expression, $.attribute_text)), '"'),
-        seq("'", repeat(choice($.output_expression, $.attribute_text)), "'")
+        seq('"', repeat(choice($.output_expression, $.attribute_text, /[^"{}]+/)), '"'),
+        seq("'", repeat(choice($.output_expression, $.attribute_text, /[^'{}]+/)), "'")
       ),
-
-    // Text content inside attributes (not EdgeJS expressions)
-    attribute_text: ($) => token(prec(-1, /[^"'{}]+/)),
 
     // Standalone EdgeJS expressions as attributes
     standalone_expression: ($) => $.output_expression,

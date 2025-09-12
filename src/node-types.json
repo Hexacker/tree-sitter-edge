@@ -51,6 +51,11 @@
     "fields": {}
   },
   {
+    "type": "css_content",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "directive",
     "named": true,
     "fields": {},
@@ -220,11 +225,19 @@
           "named": true
         },
         {
+          "type": "script_element",
+          "named": true
+        },
+        {
           "type": "self_closing_tag",
           "named": true
         },
         {
           "type": "start_tag",
+          "named": true
+        },
+        {
+          "type": "style_element",
           "named": true
         }
       ]
@@ -232,6 +245,11 @@
   },
   {
     "type": "identifier",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "js_content",
     "named": true,
     "fields": {}
   },
@@ -299,6 +317,33 @@
       "types": [
         {
           "type": "complex_parameter",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "script_element",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "attribute",
+          "named": true
+        },
+        {
+          "type": "js_content",
+          "named": true
+        },
+        {
+          "type": "standalone_expression",
+          "named": true
+        },
+        {
+          "type": "tag_name",
           "named": true
         }
       ]
@@ -388,6 +433,33 @@
       "types": [
         {
           "type": "attribute",
+          "named": true
+        },
+        {
+          "type": "standalone_expression",
+          "named": true
+        },
+        {
+          "type": "tag_name",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "style_element",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "attribute",
+          "named": true
+        },
+        {
+          "type": "css_content",
           "named": true
         },
         {
