@@ -26,7 +26,7 @@
       "repository": "https://github.com/Hexacker/tree-sitter-edge"
     }
   },
-  "parser-directories": ["/Users/hexacker/Desktop/Work/zed/tree-sitter-edge"],
+  "parser-directories": ["."],
   "bindings": {
     "c": true,
     "go": true,

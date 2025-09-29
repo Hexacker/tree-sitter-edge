@@ -1,3 +1,11 @@
 @layout.dashboard()
 {{ flashMessages.get('notification').message }}
 @flashMessage('notification')
+
+@section({
+  class: [`bg-[url('${asset('/resources/assets/hero-pattern.svg')}')]`, `bg-[url('${asset('/resources/assets/hero-pattern.svg')}')]`, 'bg-no-repeat', 'bg-top-right', 'sm:pt-24', 'py-10', 'sm:py-12']
+  })
+  <h1 class="text-4xl sm:text-6xl tracking-tighter leading-tighter font-medium text-neutral-900 dark:text-neutral-100 max-w-4xl sm:pr-12 text-balance">
+     Some title
+  </h1>
+@end
